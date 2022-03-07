@@ -1,6 +1,6 @@
 ---
-title: "Chief Analyst Interview - The Health Economics Unit"
-subtitle: "Examples of previous projects"  
+title: "Understanding Standardised Mortality"
+subtitle: "SHMI & HSMR"  
 author: 
   - "Chris Mainey"
 date: '`r Sys.Date()`'
@@ -37,6 +37,41 @@ knitr::opts_chunk$set(
   dev = "ragg_png"
 )
 ```
+
+class: title-slide
+
+# Chief Analyst Interview
+
+<br><br>
+
+### Examples of previous analytical projects
+
+
+<br><br><br><br><br>
+
+### <img src="./assets/img/crop.png" alt="Mainard icon" height="40px" />  Dr Chris Mainey
+
+`r icons::icon_style(icons::fontawesome("twitter"), fill = "#005EB8")` [@chrismainey](https://twitter.com/chrismainey)
+`r icons::icon_style(icons::fontawesome("github"), fill = "#005EB8")` [chrismainey](https://github.com/chrismainey)
+`r icons::icon_style(icons::fontawesome("linkedin"), fill = "#005EB8")`  [chrismainey](https://www.linkedin.com/in/chrismainey/)
+`r icons::icon_style(icons::fontawesome("orcid"), fill = "#005EB8")` [0000-0002-3018-6171](https://orcid.org/0000-0002-3018-6171)
+`r icons::icon_style(icons::fontawesome("globe"), fill = "#005EB8")` [www.mainard.co.uk](https://www.mainard.co.uk)
+
+.footnote[Presentation and code available: **https://github.com/chrismainey/understanding_standardised_mortality**]
+
+.art_cap[R generative art - inspired by Antonio Sánchez Chinchón - @aschinchon]
+
+
+???
+
+__End 30 seconds__!
+
+Say hi - introduce myself
+
+I'm Patient Safety Lead - System Analysis and Delivery with NHS England and Improvement. I'm an experienced analyst, data scientist and statistician, used to leading NHS data teams.  I'm a senior fellow in the NHS-R community, I contribute to the wider analyst community, and keen to help the profession move forward.
+
+Thanks for the opportunity to and interview today.
+As the brief was to present two projects that demonstrate my data science expertise.  I'm committed to using modern techniques, and embracing open source approaches.  In part to demonstrate this, the presentation is written in Rmarkdown, wit visualisation and code on GitHub.
 
 
 
