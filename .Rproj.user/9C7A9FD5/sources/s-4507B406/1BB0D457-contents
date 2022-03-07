@@ -1,0 +1,577 @@
+---
+title: "Chief Analyst Interview - The Health Economics Unit"
+subtitle: "Examples of previous projects"  
+author: 
+  - "Chris Mainey"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    seal: false
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+library(ragg)
+library(RefManageR)
+BibOptions(check.entries = FALSE, bib.style = "authoryear", style = "markdown",
+           dashed = TRUE, cite.style="authoryear", longnamesfirst=FALSE)
+
+#file.name <- system.file("Bib", "", package = "RefManageR")
+bib <- ReadBib("References.bib")
+
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE,
+  dev = "ragg_png"
+)
+```
+
+```{r R-Lang, echo=FALSE}
+# Choose the language at the beginning of your script or knit from external file
+lang <- c("EN", "FR")[1]
+```
+
+class: title-slide
+
+# Chief Analyst Interview
+
+<br><br>
+
+### Examples of previous analytical projects
+
+
+<br><br><br><br><br>
+
+### <img src="./assets/img/crop.png" alt="Mainard icon" height="40px" />  Dr Chris Mainey
+
+`r icons::icon_style(icons::fontawesome("twitter"), fill = "#005EB8")` [@chrismainey](https://twitter.com/chrismainey)
+`r icons::icon_style(icons::fontawesome("github"), fill = "#005EB8")` [chrismainey](https://github.com/chrismainey)
+`r icons::icon_style(icons::fontawesome("linkedin"), fill = "#005EB8")`  [chrismainey](https://www.linkedin.com/in/chrismainey/)
+`r icons::icon_style(icons::fontawesome("orcid"), fill = "#005EB8")` [0000-0002-3018-6171](https://orcid.org/0000-0002-3018-6171)
+`r icons::icon_style(icons::fontawesome("globe"), fill = "#005EB8")` [www.mainard.co.uk](https://www.mainard.co.uk)
+
+.footnote[Presentation and code available: **https://github.com/chrismainey/chief_analyst_presentation**]
+
+.art_cap[R generative art - inspired by Antonio Sánchez Chinchón - @aschinchon]
+
+
+???
+
+__End 30 seconds__!
+
+Say hi - introduce myself
+
+I'm Patient Safety Lead - System Analysis and Delivery with NHS England and Improvement. I'm an experienced analyst, data scientist and statistician, used to leading NHS data teams.  I'm a senior fellow in the NHS-R community, I contribute to the wider analyst community, and keen to help the profession move forward.
+
+Thanks for the opportunity to and interview today.
+As the brief was to present two projects that demonstrate my data science expertise.  I'm committed to using modern techniques, and embracing open source approaches.  In part to demonstrate this, the presentation is written in Rmarkdown, wit visualisation and code on GitHub.
+
+---
+
+# Two examples of my work:
+
+
+<br><br>
+### 1. Developing analytical methods for NHS incident reporting data
+
+<br><br>
+### 2. Re-imagining standardised mortality ratio (SMR) surveillance in HED
+
+
+???
+
+__End: 1:00__
+
+I'm aiming to illustrate to problems that I was tackling, give concise summaries of the approaches, highlighting the methods and tool sets used.
+
+---
+class: inverse center middle
+
+# Developing analytical methods for NHS incident reporting data
+
+
+---
+## Analysing Incident Data
+
++ My PhD Project: `r Citep(bib, "maineyStatisticalMethodsNHS2020")` thesis available [here](https://discovery.ucl.ac.uk/id/eprint/10094736/)
+
++ Patient Safety movement in England has encourage national incident reporting (NRLS)
+ + Routed in visible failures in care such as Mid Staffs and Bristol
+ + Harvard Medical Practice study `r Cite(bib, "leapeNatureAdverseEvents1991", .opts = list(max.names=2))`, 'Too Err is Human' `r Citep(bib, "kohnErrHumanBuilding2000", .opts = list(max.names=2))`, 'An organisation with a memory' `r Citep(bib, "donaldsonOrganisationMemory2002", .opts = list(max.names=2))`
+
+???
+Patient safety movement is reasonably new, established in the 80s through the like of Harvard medical practice study, and the reading, or clinical audit of patient notes and reflections on harm.  Often 'imported' from high-risk industries, and incident reporting was ported over, but fairly different in healthcare.
+
++ National Reporting and Learning System (NRLS) is the national repository for incident data
+
+### Commonly, with a national dataset there is a desire to use it for benchmarking
+
+__End 2:30__
+
++ Desire to compare organisations, and often to 'point the finger', but this is actually at odds with the Patient Safety discipline - about encouraging reporting to learn.
+
++ Still desire to understand reporting patterns, but clinical review is main way to use signal.
+
+--
+
++ Desire to compare behaviour across organisations safety culture
+  + Little use in most quantitative measures of incident reporting
+  + Change over time?
+
+--
+
++ Main signal is free-text:
+  + Clinical review
+  + NLP / text mining
+  
+--
+
+### HED wanted an NRLS 'module' for comparing trusts / survellieance
+
+???
+
+### My project was to examine statistical modelling approaches for these data.
+
+---
+## Project overview
+
+.left-column[
++ __"Ground-clearing" exercise - Literature review__
+
+  + Strengthened view on free-text signal
+  + Data completeness a huge issue
+  + Little-to-no useful parameters for modelling
+  + No obvious orthogonal outcome
+  + Reporting is highly organisation-specific
+
+{{content}}
+
+]
+
+
+
+???
+
+__End 3:30__
+
+
+To quote Andi when he presented on last week's 'huddle', 'it doesn't get more exciting than a systematic literature search,' but this was the place to start.
+Deeply challenging review, as it was an ill-defined question: 'how has NRLS been used for analysis?'
+
++ 'No orthogonal':
+   Not immediately clear if high reporting is good or bad.  It could be that high reporting is a function of a mature organisation that recognises incidents and learns form them, or it could mean that lots of incidents occured.
+   
++ NLP methods
+
+--
+
++ __Only quantitative approach is 'counting'__
+  + Created a 'panel' dataset - per organisation, per month
+  + Other predictors from HES: APC, OP & AE
+  + Multi-level model assumption due to clustering
+  + Overdispersion modelled various ways
+
+
+--
+
+.right-column[
++ __Output approaches for __
+  + How do we use risk-adjusted output to form indicators?
+  + Visualisation of organisations
+    + Cross-sectional
+    + Longitudinal
+
+<br>
+
+{{content}}
+
+]
+
+--
+
++ __Natural Language Processing__
+  + Examining how to create a useful dataset
+  + Visualisation of processes
+  + Identify topics in the data
+  + Predictive modelling of harm level from text
+
+
+
+---
+## Analytical methods (1)
+
+### Data preparation
++ `SQL Server Database` - ETL
++ Required manual `SAS` correction for 'delimiting' problems
++ Panel created using a 'calendar table', join all tables and aggregate per month, per trust.
+
+???
+
+__End 5:00__
+
++ Had to start all the way back with how do we get extracts, as NRLS is not static.  Needed system to chose mose recent updated.
+
++ Problems with delimiters - required diagnosing and manual SAS process
+
++ ETL and warehousing
+
++ Extraction into reporting tables as 'counts per day'
+ + HES isn't per day, it's episodes.  So per day, is a spell happening?
+ + Investigated different methods of bed-day calculation, depending on which you chose, you can call day cases zero time in hospital.
+
+
+--
+
+### Predictors / feature engineering
+
++ Predictors examined as raw counts, and proportions, as well as 'offset' denominators
++ Functional forms examined - e.g. percentile representation, multi-collinearity issues, and splines.
+
+--
+
+### Regression-based models:
+
++ Poisson regression `r Citep(bib, "poissonRecherchesProbabiliteJugements1837")` (`R`) as basis, in `R`
++ Mixture/compound distribution models `r Citep(bib, "sellersFlexibleRegressionModel2010")`
+
+
+
+---
+
+## Analytical methods (2)
+
+.pull-left[
+
+___Overdispersion___, where conditional variance is greater than conditional mean, occurs when:
+
+1. Aggregation / Discretization
+1. Mis-specified predictors/model
+1. Presence of outliers
+1. Variation between response probabilities (heterogeneity)
+
+{{content}}
+
+]
+
+--
+
+__Repeated measures (correlation) __
+
++ Regression assumes all points independent
++ Sampling from same organisations repeatedly
++ Clustered: - local means
+
+--
+
+.pull-right[
+![](./assets/img/ints.gif)
+]
+
+
+
+???
+
+__End 6:00__
+
++ The big issue here is overdispersion.  For distributions with fixed variance assumption (Poisson and Binomial), there isn't room in the mathematical definition for anything other than perfect.
+
++ That is to say that, the model assumes it's a perfect fit, and it's not. Mainly from:
+
+---
+
+## Analytical methods (3)
+
+.pull-left[
+###Advances on Poisson regression
+
++ Generalized Additive Models (GAM):`r Citep(bib, "woodGeneralizedAdditiveModels2006")` 
+  + smoothed functions of predictors
+
++ Tree methods: 
+  + "Boosting" `r Citep(bib,"friedmanStochasticGradientBoosting2002")`
+  + "Bagging" & Random Forests `r Citep(bib, c("breimanBaggingPredictors1996", "breimanRandomForests2001"))`
+
++ Neural Networks `r Citep(bib, "hastieElementsStatisticalLearning2009")`
+]
+
+--
+
+.pull-right[
+
+### Use of models
+
++ Indirectly standardised ratio
+
++ Overdispersion adjusted z-scores `r Citep(bib, "spiegelhalterHandlingOverdispersionPerformance2005")`
+
++ Funnel plots `r Citep(bib, "spiegelhalterFunnelPlotsComparing2005")`
+
++ Control charting  `r Citep(bib, "woodallUseControlCharts2006")`
+
+]
+
+???
+
+_Ends 7:30__
+
++ GAMS - probably one of my favourite methods as they are good at characterising the relations and reducing the noise (bias - variance trade-off)
+
++ Tree are a completely different type of regression model that involves recursively splitting data at points that explain the most variance.  Give similar results to MLE, becuse both describing the data, but some differences.  Need to control for bias and over-fitting, so bootstrapping ('bagging') and boosting (iteratively refitting weighted on error).
+
++ Neural networks, at simplest are cascade of rsimple models, stacking in parallel with 'layers' in sequence.  So called 'deep learning' indicates networks with more layers.  Fitted a simple feed-forward network.  Little advantage to these on small datasets.
+
+---
+
+## Natural Language Processing (NLP)
+
+Key that the free-text description contains real signal, but can't manually read ~500,000 per year
+
+
+.pull-left[
++ Quantitative analysis of text
+
++ Text processing / preparation `tidytext`, `quanteda` 
+
++ Visualisation - wordclouds, TF-IDF
+
++ Topic Modelling - LDA `r Citep(bib, "bleiLatentDirichletAllocation2003", .opts = list(max.names=2))`
+
++ Using LDA predictions to predict harm level
+
++ __Class-imbalance__
+
+]
+
+.pull-right[
+<p style="text-align:center;">
+<img src="./assets/img/wordcloud.png" alt="Wordclouds showing stage of NRLS cleaning" width = "400" height="350">
+</P>
+]
+
+???
+
+'Proverbial elephant elephant in the room'
+The key issue here is that there are ~500,000 reports per year.
+National Clinical review team of 3 -5 depending on project, so they focus on severe harm and death.
+With routing research and other work, maybe a further 2% are systematically reviewed.
+This means 98% are not reviewed and, to my mind, 'begging' for some methods of finding a signal.
+
+This is where text methods come in.
+
+
+
+Class imbalance is the major issue here:  that is where there are different size classes (or groups) to predict.
+As said before Severe and and Death account for >1%.
+Naturally poorer at predicting these, but interesting finding what that Random Forest methods performed better than others against class imbalance ~83% accuracy, and Naive Bayes performed well for minority classes by not majority.
+
+---
+## Outputs
+
++ HED interactive 'module' allowing - NHSEI prevented launch of this, but techniques used to improve several other parts of HED.
+
++ Recommendations for modelling shared with organisations:
+
+ + NHSD now investigating some of methods for SHMI.
+ + NHSEI simple method of 'under-reporting' greatly advanced by these models.
+ + NLP methods have been recognised as way forward to make better use of data.
+ 
++ In moving to NHSEI patient safety team, I am starting to implement these methods for national team.
+ 
++ Creation of `FunnelPlotR` R package, available on CRAN and donated to NHS-R community.
+
+???
+
+__End 8:00__
+
+---
+class: inverse center middle
+
+# Re-imagining standardised mortality ratio (SMR) surveillance in HED
+
+---
+
+## Re-imagining SMR surveillance
+
+
++ When comparing hospital mortality, it is common to adjust for "case-mix" to reduce confounding.
+
++ Organisation conflate 'excess' predicted deaths with 'preventable' deaths, and much academic debate
+
+
+.pull-left[
+
++ Commonly measures are:
+  + Summary Hospital-level Mortality Indicator (SHMI) `r Citep(bib, "campbellDevelopingSummaryHospital2012", .opts = list(max.names=2))`
+  + Dr Foster Hospital Standardised Mortality Ratio (HSMR) `r Citep(bib, "jarmanExplainingDifferencesEnglish1999", .opts = list(max.names=2))`
+
++ Commonly make the cross-sectional comparisons with Funnel Plot
+
++ __Unanswered question:__
+  + 'Is trust "X" getting worse'?
+
+]
+
+.pull-right[
+
+```{r funnel, echo=FALSE, out.height=300, out.width=600, fig.height=4, fig.width=6, dpi=400, message=FALSE, warning=FALSE, fig.alt="Example funnel plot", fig.link="https://github.com/nhs-r-community/FunnelPlotR"}
+library(COUNT)
+library(FunnelPlotR)
+library(dplyr)
+
+data("medpar")
+
+model1<- glm(died ~ los + age80 + factor(type), data=medpar, family="binomial")
+
+# Add predictions and write to data base to test database queries
+medpar$preds <- predict(model1, type="response")
+
+mod_plot <-
+  medpar %>%
+  group_by(Organisation = factor(provnum)) %>%
+  summarise(observed = sum(died),
+            predicted = sum(preds)) 
+
+fp1 <- funnel_plot(numerator=mod_plot$observed,denominator=mod_plot$predicted, 
+            group = mod_plot$Organisation, limit=95
+            ,label = "both"
+            , sr_method = "SHMI"
+            , title = "Example Funnel Plot"
+            , draw_adjusted = FALSE
+             )
+plot(fp1)
+```
+
+]
+
+???
+
+First point:  reduces confounding, but sometimes increases bias and is at the expense of complexity.
+
+---
+
+## Monitoring SMRs over time
+.pull-left[
+### Risk-adjusted cusum charts
+
++ Two differing approaches:
+ + CQC outliers programme
+ + Dr Foster's cususm alerts 
+
++ Organisations don't understand as 'diagnostic test'
+
+{{content}}
+
+]
+
+
+
+.pull-right[
+
+<p style="text-align:center;">
+<img src="./assets/img/agg_cusum.gif" alt="Aggregate cusum chart" width = "400" height="200">
+<img src="./assets/img/person_cusum.gif" alt="Person-level cusum chart" width = "400" height="200">
+</p>
+
+]
+
+???
+
+For methods with more of a time dimension, one might consider forecasting of survival methods, in general.
+
+Dr Foster Intelligence created an industry or 'alerting' trusts to risks - based on the methods they CQC 
+
+
+The diagnostic test, the same in any machine learning prediction model, is essential.  In epidemiology and machine learning we might construct a 2x2 table, or confusion matrix, with our predictions v.s. truth.  Assess quality of model, but there are always some false positive and negatives.  There is a trade-off between 'sensitivity' and 'specificity':  You can catch more with a lower threshold, but you'll get more false positives.  Extreme of this is to treat every data point as positive.
+This has resource implications - requiring clinical review and often highlighting data quality or statistical issues.
+--
+
++ Unclear why there were differences:
+  + Aggregation
+  + Trigger limit
+  + 'Window' size
+
++ __Both claimed false discovery rate (FDR) of 0.1%__
+
+
+
+---
+
+### Developing methods
+
+.pull-left[
+### CQC
++ Data are transformed to z-scores
++ Global trigger (5.48) - 
+  + Can convert average run-length to FDR, and set threshold `r Citep(bib, c("griggNullSteadystateDistribution2008", "carequalitycommissioncqcNHSAcuteHospitals2014"), .opts = list(max.names=2))`
++ Applicable to other indicators and groupings, subject to transformation
++ Tested in R, translated in `SQL` procedures for calculation against all trusts and diagnosis groups
+]
+
+--
+
+.pull-right[
+### DFI
++ Binomial assumption and threshold set through simulation of average run-length to false positives. `r Citep(bib,"bottlePredictingFalseAlarm2011", .opts = list(max.names=2))`
++ Unique to each trust / group / reporting period.
++ Intractable to calculate each month, and authors fitted a set of descriptive equations.
++ Wrote program to solve equations for each group with non-linear optimiser (`R`)
++ Translated into similar `SQL` process, with call to `R`
+
+]
+
+---
+
+## Delivery and presentation
+
+### Technical
+
++ Takes too long!
+  + Iterative ~ 160 organisations \* 260 diagnosis groups \* 2 methods.
+  + Tested multiple languages and data structures, designs
+  + SQL 'quirky update' - best performance
+
+
+--
+
+### Display
+
++ Important to place charts together to see trigger times
+  + Different aggregations
++ Balance of detail and simplicity
++ Linked to email alerts and dashboard summary
++ Patient details - audit
+
+--
+
+__Educate trusts on false-positive argument and build confidence, and skills to investigate.__
+
+
+---
+class: references
+
+### References (1)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, end = 14)
+```
+
+---
+class: references
+
+### References (2)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 15)
+```

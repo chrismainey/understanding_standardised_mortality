@@ -1,0 +1,52 @@
+---
+title: "Chief Analyst Interview - The Health Economics Unit"
+subtitle: "Examples of previous projects"  
+author: 
+  - "Chris Mainey"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    seal: false
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+library(ragg)
+library(RefManageR)
+BibOptions(check.entries = FALSE, bib.style = "authoryear", style = "markdown",
+           dashed = TRUE, cite.style="authoryear", longnamesfirst=FALSE)
+
+#file.name <- system.file("Bib", "", package = "RefManageR")
+bib <- ReadBib("References.bib")
+
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE,
+  dev = "ragg_png"
+)
+```
+
+
+
+---
+
+---
+class: references
+
+### References (1)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, end = 14)
+```
