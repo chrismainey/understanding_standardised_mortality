@@ -91,7 +91,7 @@ h1, h2, h3 {
 }
 .remark-slide-content h3 {
   font-size: var(--header-h3-font-size);
-  line-height: 25px;
+  line-height: 28px;
 }
 .remark-code, .remark-inline-code {
   font-family: var(--code-font-family), Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;

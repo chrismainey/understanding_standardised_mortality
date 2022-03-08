@@ -132,8 +132,8 @@ A bit of theory, a bit of anecdote.  Some R scripts available to show some of th
 
 + Yes: (...well, does their monitoring reduce deaths): `r Citep(bib, "jarmanMonitoringChangesHospital2005", "wrightLearningDeathHospital2006", .opts = list(max.names=2))`
 + No: 
-  + Poor proxy of avoidable death: `r Citep(bib, "keoghKeoghReviewHospital2013")`
-  + Case-mix adjustment can exaggerate biases it tries to address: `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015", .opts = list(max.names=2))`
+  + Poor proxy of avoidable death: `r Citep(bib, "girlingCasemixAdjustedHospital2012")`
+  + Case-mix adjustment can exaggerate biases it tries to address: `r Citep(bib, "deeksEvaluatingNonrandomisedIntervention2003", .opts = list(max.names=2))`
 
 
 
@@ -292,12 +292,68 @@ class: inverse middle
 ---
 
 ---
+class: inverse
 # Common SMRs:
 
 + Summary Hospital-level Mortality Indicator (SHMI) `r Citep(bib, "campbellDevelopingSummaryHospital2012", .opts = list(max.names=2))`
 + Dr Foster Hospital Standardised Mortality Ratio (HSMR) `r Citep(bib, "jarmanExplainingDifferencesEnglish1999", .opts = list(max.names=2))`
 
+---
+## Hospital Standardised Mortality Ratio (HSMR)
 
++ Work in USA in as early as 1970s demonstrated ability to calculate theses metrics.
+
++ Prof. Sir Brian Jarman and others adapted these methods to English health care system, data coding standards and structures
+
++ Methods were heavily impacted and applied in aftermath of Bristol and Mid-Staffs enquiry.
+
++ Controversy on some issues:
+  + Commercial exploitation of method by Dr Foster Intelligence  - accused of 'black box methods'
+  + University of Birmingham and others published criticism
+  + Imperial rebutted criticism, and won NIHR funding to build national monitoring system
+  + Until recently, sent alerts to CQC and trusts for high mortality.
+  
+__Key References:__
++ Original paper: `r Citep(bib, "jarmanExplainingDifferencesEnglish1999", .opts = list(max.names=2))`
++ Birmingham's criticism: `r Citep(bib, "mohammedEvidenceMethodologicalBias2009", .opts = list(max.names=2))` 
++ Paul Taylor's long-form article on history and controversy: `r Citep(bib, "taylorStandardizedMortalityRatios2014", .opts = list(max.names=2))`
+
+---
+## Summary Hospital-level Mortality Indicator (SHMI)
+
+With growing controversy, then NHS Medical Director, Prof. Sir Bruce Keogh, commissioned a review.
+
+--
+
+Recommended creating a new, NHS owned and transparently published indicator, however:
++ Changed the remit to in-hospital or within 30-days of discharge
++ Applied to all acute activity (except still birth)
++ Cruder case-mix model deliberately to avoid controversial measure such as:
+  + Palliative care coding
+  + No adjustment for deprivation - political context
+  + Co-morbidity score 'binned' rather than continuous to reduce change of gaming
+  + Fewer, larger diagnosis groups
+
+--
+
+__Key References:__
++ Review: [National Quality Board (in national web archives)(https://webarchive.nationalarchives.gov.uk/ukgwa/20120503091458/http://www.dh.gov.uk/en/Healthcare/Qualityandproductivity/Makingqualityhappen/NationalQualityBoard/DH_102954)
++ Sheffield paper: `r Citep(bib, "campbellDevelopingSummaryHospital2012", .opts = list(max.names=2))`
++ NHSD SHMI: www.digital.nhs.uk/SHMI
+
+---
+class: center middle
+# Case-mix factors:
+
+<img src="./assets/img/model.png" alt="SHMI & HSMR comparison table">
+
+---
+
+# Criticisms (HSMR and/or SHMI)
+
++ They do not directly relate to quality `r Citep(bib,"lilfordUsingHospitalMortality2010","blackAssessingQualityHospitals2010a", .opts = list(max.names=2))`
+
++ They do not relate to avoidable death  `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015", .opts = list(max.names=2))`
 ---
 class: inverse middle
 
@@ -388,19 +444,9 @@ class: inverse middle
 .pull-left[
 + Can't simply plot in XmR chart, as risk-adjustment forms denominator (and overdispersion)
 
-+ Can use the observed and predicted in risk-adjusted control chart
+{{content}}
 
-+ Common is 'risk-adjusted CUSUM'
-  + Continuous log-likelihood ratio test
-
---
-
-$$C_t = max(C_{t-1} + w_t, 0)$$
-
-+ $C$ CUSUM value at time-point $t$ (e.g. a monthly at a trust)
-+ $w$ is a weighting, in this case the log-likelihood ratio (observation v.s. England) to calculate the CUSUM weight/value ($C$) at time point ($t$):
 ]
-
 
 .pull-right[
 
@@ -411,70 +457,76 @@ $$C_t = max(C_{t-1} + w_t, 0)$$
 
 ]
 
+--
+
++ Can use the observed and predicted in risk-adjusted control chart
+
+{{content}}
+--
+
++ Common is 'risk-adjusted CUSUM'
+  + Continuous log-likelihood ratio test
+
+{{content}}
+--
+
+<br>
+
+$$C_t = max(C_{t-1} + w_t, 0)$$
+
++ $C$ CUSUM value at time-point $t$ (e.g. a monthly at a trust)
++ $w$ is a weighting, in this case the log-likelihood ratio (observation v.s. England) to calculate the CUSUM weight/value ( $C$ ) at time point ( $t$ )
+
 ---
 # Differences in CUSUM methods
 
 Until recently, mortality outlier programme and Imperial college sent monthly alerts to Trusts.
 
 .pull-left[
-### CQC
+### CQC - (aggregated)
 + Data are transformed to z-scores
-+ Global trigger (5.48) - 
-  + Can convert average run-length to FDR, and set threshold `r Citep(bib, c("griggNullSteadystateDistribution2008", "carequalitycommissioncqcNHSAcuteHospitals2014"), .opts = list(max.names=2))`
-+ Applicable to other indicators and groupings, subject to transformation
-+ Tested in R, translated in `SQL` procedures for calculation against all trusts and diagnosis groups
++ Overdispersion adjustment based on additive model `r Citep(bib,"spiegelhalterStatisticalMethodsHealthcare2012")`
++ Can convert average run-length to FDR, and set threshold `r Citep(bib, c("griggNullSteadystateDistribution2008", "carequalitycommissioncqcNHSAcuteHospitals2014"), .opts = list(max.names=2))`
++ Global trigger (5.48) - set to marginal 0.01% FDR.
++ Applicable to other indicators and groupings, subject to same transformation
 ]
 
 --
 
 .pull-right[
-### DFI
+### DFI/Imperial - (person-level)
 + Binomial assumption and threshold set through simulation of average run-length to false positives. `r Citep(bib,"bottlePredictingFalseAlarm2011", .opts = list(max.names=2))`
 + Unique to each trust / group / reporting period.
-+ Intractable to calculate each month, and authors fitted a set of descriptive equations.
-+ Wrote program to solve equations for each group with non-linear optimiser (`R`)
-+ Translated into similar `SQL` process, with call to `R`
++ Intractable to calculate each month, and authors fitted a set of descriptive equations give a decent approximation for conditions where mortality rate 30% or lower.
++ Formula can then be solved through optimisation methods and give threshold value for each group.
 
 ]
 
 ---
-# VLAD charts
+# Problem with CUSUM charts
 
-A common criticism of CUSUMs is that the are opaque and hard to interpret.
++ A common criticism of CUSUMs is that the are opaque and hard to interpret
++ What does the CUSUM value mean?
 
 --
 
 .pull-left[
-# Visual Life Adjusted Display
+### Variable Life-Adjusted Display (VLAD)
 
-+ Originally used to visualise surgical outcome more intuitively
-+ $Vn=\sum\limits_{i=1}^ny_n -  \sum\limits_{i=1}^n X_n $
-+ Can actually add limits tp 
++ Originally used to visualise surgical outcome more intuitively `r Citep(bib,"lovegroveMonitoringPerformanceCardiac1999", .opts = list(max.names=2))`
++ Can actually add limits to plot using cusums `r Citep(bib,"sherlaw-johnsonMethodDetectingRuns2005", .opts = list(max.names=2))`
+
+$$Vn=\sum\limits_{i=1}^ny_n -  \sum\limits_{i=1}^n X_n$$
 ]
 
 .pull-right[
-```{r vlad}
-library(RcppRoll)
-sub <- 
-  medpar %>% 
-  filter(provnum == "030001") %>% 
-  mutate(ps = 1 - pred,
-         lives = ifelse(died == 1, -ps, (1-ps)))
+
+<p style="text-align:center;">
+<img src="./assets/img/vlad_limits.png" alt="SHMI VLAD chart for fluid an electrolyte disorders, taken from Oxford University Hospital board papers" width = "500" height="300">
+</p>
 
 
-sub$wt <- cumsum(sub$lives)
-
-ggplot(sub, aes(y=wt, x=seq(length(lives))))+
-  geom_point()+
-  geom_line()+
-  theme(text = element_text(size=9))+
-  labs(title = "VLAD chart of `medpar` data set from COUNT package"
-       , y = "Lives gianed"
-       , x = "Patients discharged")+ 
-  theme(text = element_text(size=9), plot.title = element_text(size=16),
-        axis.title = element_text(size=11))
-
-```
+.footnote[Chart sourced from https://www.ouh.nhs.uk/about/trust-board/2018/january/documents/MRG2017.149a-shmi-update.pdf]
 
 ]
 
@@ -484,13 +536,21 @@ class:  inverse middle
 
 # Summary
 
----
-# 
+
 ---
 class: references
 
 ### References (1)
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib, .opts = )
+PrintBibliography(bib, end = 14)
+```
+
+---
+class: references
+
+### References (2)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 15)
 ```
