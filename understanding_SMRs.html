@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Understanding Standardised Mortality</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Chris Mainey" />
+    <meta name="date" content="2022-03-08" />
+    <script src="understanding_SMRs_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+class: title-slide
+
+
+
+## Understanding Standardised Mortality Ratios (SMRs)
+
+&lt;br&gt;
+.pull-left[
+
+### SHMI and HSMR
+
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+### &lt;img src="./assets/img/crop.png" alt="Mainard icon" height="40px" /&gt;  Dr Chris Mainey
+
+&lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#005EB8;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"&gt;&lt;/path&gt;&lt;/svg&gt; [@chrismainey](https://twitter.com/chrismainey)
+&lt;svg viewBox="0 0 496 512" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#005EB8;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"&gt;&lt;/path&gt;&lt;/svg&gt; [chrismainey](https://github.com/chrismainey)
+&lt;svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#005EB8;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"&gt;&lt;/path&gt;&lt;/svg&gt;  [chrismainey](https://www.linkedin.com/in/chrismainey/)
+&lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#005EB8;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M294.75 188.19h-45.92V342h47.47c67.62 0 83.12-51.34 83.12-76.91 0-41.64-26.54-76.9-84.67-76.9zM256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-80.79 360.76h-29.84v-207.5h29.84zm-14.92-231.14a19.57 19.57 0 1 1 19.57-19.57 19.64 19.64 0 0 1-19.57 19.57zM300 369h-81V161.26h80.6c76.73 0 110.44 54.83 110.44 103.85C410 318.39 368.38 369 300 369z"&gt;&lt;/path&gt;&lt;/svg&gt; [0000-0002-3018-6171](https://orcid.org/0000-0002-3018-6171)
+&lt;svg viewBox="0 0 496 512" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#005EB8;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"&gt;&lt;/path&gt;&lt;/svg&gt; [www.mainard.co.uk](https://www.mainard.co.uk)
+]
+
+.pull-right[
+
+&lt;br&gt;&lt;br&gt;
+
+&lt;img src="understanding_SMRs_files/figure-html/funnel-1.png" width="100%" /&gt;
+]
+
+.footnote[Presentation and code available: **https://github.com/chrismainey/understanding_standardised_mortality**]
+
+???
+
+__End 30 seconds__!
+
+Say hi - introduce myself
+
+I'm Patient Safety Lead - System Analysis and Delivery with NHS England and Improvement. 
+
+I'm analyst by background, specialised in statistical modelling and and machine learning methods.  My previous role was with UHB - HED, providing HES-based analytical tools to ~50 NHS trust and other organisations. Specialised in statistical productions, mainly risk adjustment and prediction focused.
+
+Today we are going to talk about monitoring mortality, the construction of standardised ratios, the common SMRs in use SHMI and HSMR, cross-sectional and longitudinal monitoring, and issues.
+
+A bit of theory, a bit of anecdote.  Some R scripts available to show some of the functions.
+
+
+---
+
+# Measuring death
+
+### Why do we do it?
+
++ 'Smoke alarm for the quality of care' - &lt;a id='cite-keoghKeoghReviewHospital2013'&gt;&lt;/a&gt;(&lt;a href='#bib-keoghKeoghReviewHospital2013'&gt;Keogh, 2013&lt;/a&gt;)
+
+### Does it work?
+
++ Yes: (...well, does their monitoring reduce deaths): &lt;a id='cite-jarmanMonitoringChangesHospital2005'&gt;&lt;/a&gt;&lt;a id='cite-wrightLearningDeathHospital2006'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10.1136/bmj.330.7487.329'&gt;Jarman Bottle, et al., 2005&lt;/a&gt;; &lt;a href='https://doi.org/10.1258/jrsm.99.6.303'&gt;Wright Dugdale, et al., 2006&lt;/a&gt;)
++ No: 
+  + Poor proxy of avoidable death: (&lt;a href='#bib-keoghKeoghReviewHospital2013'&gt;Keogh, 2013&lt;/a&gt;)
+  + Case-mix adjustment can exaggerate biases it tries to address: &lt;a id='cite-girlingCasemixAdjustedHospital2012'&gt;&lt;/a&gt;&lt;a id='cite-hoganAvoidabilityHospitalDeaths2015'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/f4fr3b'&gt;Girling Hofer, et al., 2012&lt;/a&gt;; &lt;a href='https://doi.org/10/gb3swm'&gt;Hogan Zipfel, et al., 2015&lt;/a&gt;)
+
+
+
+--
+
+#### Desceptive argument:
+_"...of course we should be monitoring deaths"_ but that's too simple, and it's not a direct measure of 'quality.'
+
+
+---
+class: inverse middle
+
+# Crude Mortality
+
+
+---
+# Crude mortality
+
+.pull-left[
+
++ Count the numbers of deaths?   - Not a rate
+{{content}}
+]
+
+.pull-right[
+&lt;img src="understanding_SMRs_files/figure-html/crudeplot-1.png" width="100%" /&gt;
+
+&lt;img src="understanding_SMRs_files/figure-html/crudetime-1.png" width="100%" /&gt;
+]
+
+--
+
++ Give it some sort of scale:  proportion
+  + In hospital, patients, discharges, bed-days etc.
+  + Often adjusted to a larger standard, e.g. per thousand
+
+`$${Crude\ Rate(p)} = \frac{\Sigma Deaths}{n}$$`
+
+{{content}}
+--
+
++ __Strengths:__
+ + Easy to calculate
+ + Directly linked to real deaths
+ 
+{{content}}
+--
+
++ __Weaknesses:__
+ + Not really comparable across organisations
+ + Casemix confounds rate
+
+---
+class: inverse middle
+
+# Standardising mortality
+### Aim: reduce confounding and increase power of comparison
+
+---
+# Direct standardisation
+
++ Take our data and map them to a common population/structure.
+
++ Example:  Age-standardisation:
+  + Calculate age-specific rates in groups (e.g. 10-year)
+  + Identify a relevant standard population in corresponding groups. E.g. [European Standard Population]( https://www.opendata.nhs.scot/dataset/standard-populations)
+  + Multiply age-specific rates by standard population bins
+  + Sum and adjust to desired multiplier (e.g. per 100, per 100,000 etc.)
+
++ Commonly used in public health cases, such as cancer incidence and mortality rates.
+
+--
++ __Strengths:__
+ + Directly comparable between units/group/sites/countries
+ + Does not require statistical model
+ 
+
+--
+
++ __Weaknesses:__
+ + Harder to relate to local/observed numbers
+ + Challenging to do for anything more than age and sex
+
+---
+# Indirect standardisation
+
++ Compare our data to expected averages
+
++ E.g. using simple average as standard
+ + Calculate average rate, per patient, across the dataset
+ + Per trust, calculate 'expected rate': `\(average\ rate * n\)`
+
++ Commonly uses a regression model 
+
+
++ __Strengths:__
+ + Directly comparable between units/group/sites/countries
+ + Usually require statistical model, e.g. regression
+ 
+{{content}}
+--
+
++ __Weaknesses:__
+ + Usually requires a statistical model, e.g. regression to calculate 'expected rate'
+ + Susceptible to more forms of bias &lt;a id='cite-iezzoniRisksRiskAdjustment1997'&gt;&lt;/a&gt;&lt;a id='cite-deeksEvaluatingNonrandomisedIntervention2003'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/c2trv4'&gt;Iezzoni, 1997&lt;/a&gt;; &lt;a href='#bib-deeksEvaluatingNonrandomisedIntervention2003'&gt;Deeks Dinnes, et al., 2003&lt;/a&gt;)
+ + Can be challenging to understand what changes in rate mean
+ 
+#### This is how SHMI and HSMR are constructed.
+
+---
+
+---
+# Common SMRs:
+
++ Summary Hospital-level Mortality Indicator (SHMI) &lt;a id='cite-campbellDevelopingSummaryHospital2012'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/gb3r9t'&gt;Campbell Jacques, et al., 2012&lt;/a&gt;)
++ Dr Foster Hospital Standardised Mortality Ratio (HSMR) &lt;a id='cite-jarmanExplainingDifferencesEnglish1999'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/fkkfm9'&gt;Jarman Gault, et al., 1999&lt;/a&gt;)
+
+
+---
+class: inverse middle
+
+# Cross-sectional
+
+---
+
+# Comparison at single point in time
+
+.pull-left[
++ Both HSMR and SHMI report on the final year of their modelling period.
+
++ Snapshot of performance against expected
+
++ League-tables are bad, as measure is relative 
+
++ SPC principles applied in using funnel plot &lt;a id='cite-spiegelhalterFunnelPlotsComparing2005'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/fq7z8t'&gt;Spiegelhalter, 2005a&lt;/a&gt;)
+
++ Overdispersion
+]
+
+.pull-right[
+![](./understanding_SMRs_files/figure-html/funnel-1.png)
+]
+---
+
+# Overdispersion
+
+.pull-left[
+
+___Overdispersion___, where conditional variance is greater than conditional mean, occurs when:
+
+1. Aggregation / Discretization
+1. Mis-specified predictors/model
+1. Presence of outliers
+1. Variation between response probabilities (heterogeneity)
+
+{{content}}
+
+]
+
+--
+
+__Repeated measures (correlation) __
+
++ Regression assumes all points independent
++ Sampling from same organisations repeatedly
++ Clustered: - local means
+
+--
+
+
+.pull-right[
+![](./assets/img/ints.gif)
+]
+
+---
+
+# Options for dealing with overdisperion
+
++ Ignore it: usecase dependent.  False alarm rate too high here, as error is underestimated
+
++ Improve the model with more information: Some room for this.
+
++ Build a model with clustered assumption &lt;a id='cite-maineyStatisticalMethodsNHS2020'&gt;&lt;/a&gt;(&lt;a href='https://discovery.ucl.ac.uk/id/eprint/10094736/'&gt;Mainey, 2020&lt;/a&gt;):
+  + Quasi-likelihood methods (with multiplicative scale factor) &lt;a id='cite-wedderburnQuasiLikelihoodFunctionsGeneralized1974'&gt;&lt;/a&gt;(&lt;a href='#bib-wedderburnQuasiLikelihoodFunctionsGeneralized1974'&gt;Wedderburn, 1974&lt;/a&gt;)
+  + Compound distribution model: beta binomial&lt;a id='cite-skellamProbabilityDistributionDerived1948'&gt;&lt;/a&gt;(&lt;a href='#bib-skellamProbabilityDistributionDerived1948'&gt;Skellam, 1948&lt;/a&gt;)
+  + Random-intercept model: model 'within' and 'between' variance 
+
++ Apply tools based on meta-analysis methods: (&lt;a href='https://doi.org/10/fq7z8t'&gt;Spiegelhalter, 2005a&lt;/a&gt;)
+  + Designed to summarise studies fo different size
+  + Akin to hospitals of different sizes
+  + Additivity assumption - more like random intercept than
+  
+  
+
+
+
+---
+class: inverse middle
+
+# Longitudinal
+
+---
+
+# How?
+
+.pull-left[
++ Can't simply plot in XmR chart, as risk-adjustment forms denominator (and overdispersion)
+
++ Can use the observed and predicted in risk-adjusted control chart
+
++ Common is 'risk-adjusted CUSUM'
+  + Continuous log-likelihood ratio test
+
+--
+
+`$$C_t = max(C_{t-1} + w_t, 0)$$`
+
++ `\(C\)` CUSUM value at time-point `\(t\)` (e.g. a monthly at a trust)
++ `\(w\)` is a weighting, in this case the log-likelihood ratio (observation v.s. England) to calculate the CUSUM weight/value ($C$) at time point ($t$):
+]
+
+
+.pull-right[
+
+&lt;p style="text-align:center;"&gt;
+&lt;img src="./assets/img/agg_cusum.gif" alt="Aggregate cusum chart" width = "400" height="200"&gt;
+&lt;img src="./assets/img/person_cusum.gif" alt="Person-level cusum chart" width = "400" height="200"&gt;
+&lt;/p&gt;
+
+]
+
+---
+# Diffrences in CUSUM methods
+
+Until recently, mortality outlier programme and Imperial college sent monthly alerts to Trusts.
+
+.pull-left[
+### CQC
++ Data are transformed to z-scores
++ Global trigger (5.48) - 
+  + Can convert average run-length to FDR, and set threshold &lt;a id='cite-griggNullSteadystateDistribution2008'&gt;&lt;/a&gt;&lt;a id='cite-carequalitycommissioncqcNHSAcuteHospitals2014'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/bgvkdx'&gt;Grigg and Spiegelhalter, 2008&lt;/a&gt;; &lt;a href='#bib-carequalitycommissioncqcNHSAcuteHospitals2014'&gt;Care Quality Commission, 2014&lt;/a&gt;)
++ Applicable to other indicators and groupings, subject to transformation
++ Tested in R, translated in `SQL` procedures for calculation against all trusts and diagnosis groups
+]
+
+--
+
+.pull-right[
+### DFI
++ Binomial assumption and threshold set through simulation of average run-length to false positives. &lt;a id='cite-bottlePredictingFalseAlarm2011'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/cbr4rq'&gt;Bottle and Aylin, 2011&lt;/a&gt;)
++ Unique to each trust / group / reporting period.
++ Intractable to calculate each month, and authors fitted a set of descriptive equations.
++ Wrote program to solve equations for each group with non-linear optimiser (`R`)
++ Translated into similar `SQL` process, with call to `R`
+
+]
+
+---
+class: references
+
+### References (1)
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-bottlePredictingFalseAlarm2011'&gt;&lt;/a&gt;&lt;a href="#cite-bottlePredictingFalseAlarm2011"&gt;Bottle, A. and P. Aylin&lt;/a&gt;
+(2011).
+&amp;ldquo;Predicting the false alarm rate in multi-institution mortality monitoring&amp;rdquo;.
+In: &lt;em&gt;The Journal of the Operational Research Society&lt;/em&gt; 62.9, pp. 1711&amp;ndash;1718.
+ISSN: 01605682, 14769360.
+DOI: &lt;a href="https://doi.org/10/cbr4rq"&gt;10/cbr4rq&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-campbellDevelopingSummaryHospital2012'&gt;&lt;/a&gt;&lt;a href="#cite-campbellDevelopingSummaryHospital2012"&gt;Campbell, M. J., R. M. Jacques, J. Fotheringham, et al.&lt;/a&gt;
+(2012).
+&amp;ldquo;Developing a summary hospital mortality index: retrospective analysis in English hospitals over five years&amp;rdquo;.
+In: &lt;em&gt;BMJ&lt;/em&gt; 344, p. e1001.
+DOI: &lt;a href="https://doi.org/10/gb3r9t"&gt;10/gb3r9t&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-carequalitycommissioncqcNHSAcuteHospitals2014'&gt;&lt;/a&gt;&lt;a href="#cite-carequalitycommissioncqcNHSAcuteHospitals2014"&gt;Care Quality Commission&lt;/a&gt;
+(2014).
+&lt;em&gt;NHS acute hospitals: Statistical Methodology&lt;/em&gt;.
+Care Quality Commission (CQC).&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-deeksEvaluatingNonrandomisedIntervention2003'&gt;&lt;/a&gt;&lt;a href="#cite-deeksEvaluatingNonrandomisedIntervention2003"&gt;Deeks, J. J., J. Dinnes, R. D'Amico, et al.&lt;/a&gt;
+(2003).
+&amp;ldquo;Evaluating Non-Randomised Intervention Studies.&amp;rdquo;
+In: &lt;em&gt;Health technology assessment (Winchester, England)&lt;/em&gt; 7.27, pp. iii-173.
+ISSN: 1366-5278.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-girlingCasemixAdjustedHospital2012'&gt;&lt;/a&gt;&lt;a href="#cite-girlingCasemixAdjustedHospital2012"&gt;Girling, A. J., T. P. Hofer, J. Wu, et al.&lt;/a&gt;
+(2012).
+&amp;ldquo;Case-Mix Adjusted Hospital Mortality Is a Poor Proxy for Preventable Mortality: A Modelling Study&amp;rdquo;.
+In: &lt;em&gt;BMJ Quality &amp;amp; Safety&lt;/em&gt; 21.12, pp. 1052&amp;ndash;1056.
+DOI: &lt;a href="https://doi.org/10/f4fr3b"&gt;10/f4fr3b&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-griggNullSteadystateDistribution2008'&gt;&lt;/a&gt;&lt;a href="#cite-griggNullSteadystateDistribution2008"&gt;Grigg, O. and D. Spiegelhalter&lt;/a&gt;
+(2008).
+&amp;ldquo;The null steady-state distribution of the CUSUM statistic&amp;rdquo;.
+In: &lt;em&gt;Technometrics : a journal of statistics for the physical, chemical, and engineering sciences&lt;/em&gt;.
+DOI: &lt;a href="https://doi.org/10/bgvkdx"&gt;10/bgvkdx&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-hoganAvoidabilityHospitalDeaths2015'&gt;&lt;/a&gt;&lt;a href="#cite-hoganAvoidabilityHospitalDeaths2015"&gt;Hogan, H., R. Zipfel, J. Neuburger, et al.&lt;/a&gt;
+(2015).
+&amp;ldquo;Avoidability of Hospital Deaths and Association with Hospital-Wide Mortality Ratios: Retrospective Case Record Review and Regression Analysis&amp;rdquo;.
+In: &lt;em&gt;BMJ&lt;/em&gt; 351.
+DOI: &lt;a href="https://doi.org/10/gb3swm"&gt;10/gb3swm&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-iezzoniRisksRiskAdjustment1997'&gt;&lt;/a&gt;&lt;a href="#cite-iezzoniRisksRiskAdjustment1997"&gt;Iezzoni, L. I.&lt;/a&gt;
+(1997).
+&amp;ldquo;The Risks of Risk Adjustment&amp;rdquo;.
+In: &lt;em&gt;JAMA&lt;/em&gt; 278.19, pp. 1600&amp;ndash;7.
+ISSN: 0098-7484 (Print) 0098-7484 (Linking).
+DOI: &lt;a href="https://doi.org/10/c2trv4"&gt;10/c2trv4&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-jarmanMonitoringChangesHospital2005'&gt;&lt;/a&gt;&lt;a href="#cite-jarmanMonitoringChangesHospital2005"&gt;Jarman, B., A. Bottle, P. Aylin, et al.&lt;/a&gt;
+(2005).
+&amp;ldquo;Monitoring Changes in Hospital Standardised Mortality Ratios&amp;rdquo;.
+In: &lt;em&gt;BMJ (Clinical research ed.)&lt;/em&gt; 330.7487, pp. 329&amp;ndash;329.
+ISSN: 1756-1833.
+DOI: &lt;a href="https://doi.org/10.1136/bmj.330.7487.329"&gt;10.1136/bmj.330.7487.329&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-jarmanExplainingDifferencesEnglish1999'&gt;&lt;/a&gt;&lt;a href="#cite-jarmanExplainingDifferencesEnglish1999"&gt;Jarman, B., S. Gault, B. Alves, et al.&lt;/a&gt;
+(1999).
+&amp;ldquo;Explaining differences in English hospital death rates using routinely collected data&amp;rdquo;.
+In: &lt;em&gt;BMJ&lt;/em&gt; 318.7197, pp. 1515&amp;ndash;1520.
+ISSN: 0959-8138 1468-5833.
+DOI: &lt;a href="https://doi.org/10/fkkfm9"&gt;10/fkkfm9&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-keoghKeoghReviewHospital2013'&gt;&lt;/a&gt;&lt;a href="#cite-keoghKeoghReviewHospital2013"&gt;Keogh, B.&lt;/a&gt;
+(2013).
+&lt;em&gt;Keogh Review on Hospital Deaths Published - NHSUK&lt;/em&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-maineyStatisticalMethodsNHS2020'&gt;&lt;/a&gt;&lt;a href="#cite-maineyStatisticalMethodsNHS2020"&gt;Mainey, C.&lt;/a&gt;
+(2020).
+&amp;ldquo;Statistical methods for NHS incident reporting data&amp;rdquo;.
+London.
+URL: &lt;a href="https://discovery.ucl.ac.uk/id/eprint/10094736/"&gt;https://discovery.ucl.ac.uk/id/eprint/10094736/&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-skellamProbabilityDistributionDerived1948'&gt;&lt;/a&gt;&lt;a href="#cite-skellamProbabilityDistributionDerived1948"&gt;Skellam, J. G.&lt;/a&gt;
+(1948).
+&amp;ldquo;A Probability Distribution Derived from the Binomial Distribution by Regarding the Probability of Success as Variable Between the Sets of Trials&amp;rdquo;.
+In: &lt;em&gt;Journal of the Royal Statistical Society. Series B (Methodological)&lt;/em&gt; 10.2, pp. 257&amp;ndash;261.
+ISSN: 00359246.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-spiegelhalterFunnelPlotsComparing2005'&gt;&lt;/a&gt;&lt;a href="#cite-spiegelhalterFunnelPlotsComparing2005"&gt;Spiegelhalter, D. J.&lt;/a&gt;
+(2005a).
+&amp;ldquo;Funnel plots for comparing institutional performance&amp;rdquo;.
+In: &lt;em&gt;Statistics in Medicine&lt;/em&gt; 24.8, pp. 1185&amp;ndash;202.
+ISSN: 0277-6715 (Print) 0277-6715 (Linking).
+DOI: &lt;a href="https://doi.org/10/fq7z8t"&gt;10/fq7z8t&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-wedderburnQuasiLikelihoodFunctionsGeneralized1974'&gt;&lt;/a&gt;&lt;a href="#cite-wedderburnQuasiLikelihoodFunctionsGeneralized1974"&gt;Wedderburn, R. W. M.&lt;/a&gt;
+(1974).
+&amp;ldquo;Quasi-Likelihood Functions, Generalized Linear Models, and the Gauss-Newton Method&amp;rdquo;.
+In: &lt;em&gt;Biometrika&lt;/em&gt; 61.3, pp. 439&amp;ndash;447.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-wrightLearningDeathHospital2006'&gt;&lt;/a&gt;&lt;a href="#cite-wrightLearningDeathHospital2006"&gt;Wright, J., B. Dugdale, I. Hammond, et al.&lt;/a&gt;
+(2006).
+&amp;ldquo;Learning from Death: A Hospital Mortality Reduction Programme&amp;rdquo;.
+In: &lt;em&gt;Journal of the Royal Society of Medicine&lt;/em&gt; 99.6, pp. 303&amp;ndash;308.
+ISSN: 0141-0768.
+DOI: &lt;a href="https://doi.org/10.1258/jrsm.99.6.303"&gt;10.1258/jrsm.99.6.303&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

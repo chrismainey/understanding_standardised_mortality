@@ -52,7 +52,7 @@
   --inverse-text-color: #E9EBEE;
   --inverse-background-color: #23395b;
   --inverse-header-color: #E9EBEE;
-  --inverse-link-color: #23395b;
+  --inverse-link-color:  #E9EBEE;
   --title-slide-background-color: #23395b;
   --title-slide-text-color: #E9EBEE;
   --header-background-color: #23395b;
@@ -116,6 +116,7 @@ a, a > code {
   color: var(--link-color);
   text-decoration: none;
 }
+
 .footnote {
   position: absolute;
   bottom: 60px;
@@ -145,13 +146,16 @@ a, a > code {
   margin: 35px, 0
 }
 
+.title-slide a, .title-slide a > code {
+  color: var(--inverse-link-color);
+}
+
 .title-slide p {
   line-height: 12px;
   margin: 5px;
 }
 .title-slide {
   background-color: var(--title-slide-background-color);
-  background-image: url("./assets/img/artsy.png");
   background-size: 35%;
   background-position: right 8% bottom 60%;
   /*background-clip: content-box;*/

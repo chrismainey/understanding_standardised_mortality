@@ -19,35 +19,61 @@ output:
 ```{r setup, include=FALSE}
 library(ragg)
 library(RefManageR)
-BibOptions(check.entries = FALSE, bib.style = "authoryear", style = "markdown",
-           dashed = TRUE, cite.style="authoryear", longnamesfirst=FALSE)
-
-#file.name <- system.file("Bib", "", package = "RefManageR")
-bib <- ReadBib("References.bib")
+library(NHSRdatasets)
+library(tidyverse)
+library(scales)
+library(FunnelPlotR)
+library(COUNT)
 
 options(htmltools.dir.version = FALSE)
+BibOptions(check.entries = FALSE, bib.style = "authoryear", style = "HTML",
+           dashed = TRUE, cite.style="authoryear", longnamesfirst=FALSE)
+
+file.name <- system.file("Bib", "References.bib", package = "RefManageR")
+bib <- ReadBib("References.bib")
+
+data("medpar")
+data("LOS_model")
+#LOS_model <- rbind(LOS_model, LOS_model)
+
 knitr::opts_chunk$set(
-  fig.width=9, fig.height=3.5, fig.retina=3,
-  out.width = "100%",
-  cache = FALSE,
-  echo = TRUE,
-  message = FALSE, 
-  warning = FALSE,
-  hiline = TRUE,
-  dev = "ragg_png"
+	echo = TRUE,
+	fig.height = 3.5,
+	fig.retina = 3,
+	#fig.showtext = TRUE,
+	fig.width = 9,
+	message = FALSE,
+	warning = FALSE,
+	cache = FALSE,
+	dev = "ragg_png",
+	hiline = TRUE,
+	out.width = "100%"
 )
+
+
+my_theme <- readRDS("theme.rds")
+theme_set(my_theme)
+
+```
+
+```{r R-Lang, echo=FALSE}
+# Choose the language at the beginning of your script or knit from external file
+lang <- c("EN", "FR")[1]
 ```
 
 class: title-slide
 
-# Chief Analyst Interview
-
-<br><br>
-
-### Examples of previous analytical projects
 
 
-<br><br><br><br><br>
+## Understanding Standardised Mortality Ratios (SMRs)
+
+<br>
+.pull-left[
+
+### SHMI and HSMR
+
+
+<br><br><br><br>
 
 ### <img src="./assets/img/crop.png" alt="Mainard icon" height="40px" />  Dr Chris Mainey
 
@@ -56,11 +82,28 @@ class: title-slide
 `r icons::icon_style(icons::fontawesome("linkedin"), fill = "#005EB8")`  [chrismainey](https://www.linkedin.com/in/chrismainey/)
 `r icons::icon_style(icons::fontawesome("orcid"), fill = "#005EB8")` [0000-0002-3018-6171](https://orcid.org/0000-0002-3018-6171)
 `r icons::icon_style(icons::fontawesome("globe"), fill = "#005EB8")` [www.mainard.co.uk](https://www.mainard.co.uk)
+]
+
+.pull-right[
+
+<br><br>
+
+```{r funnel, echo=FALSE, fig.height=3.5, fig.width=6}
+mod1 <- glm(died ~ los + factor(type) + age80, data=medpar, family = "binomial")
+#summary(mod1)
+
+medpar$pred <- predict(mod1, type="response")
+
+a<-funnel_plot(medpar$died, medpar$pred, medpar$provnum, 
+            draw_adjusted = FALSE, draw_unadjusted = TRUE 
+            , x_range = c(0,30), y_range=c(0,3)
+            , title = "Funnel Plot of SMR, using `medpar` data from COUNT package" )
+plot(a) + theme(plot.title = element_text())
+
+```
+]
 
 .footnote[Presentation and code available: **https://github.com/chrismainey/understanding_standardised_mortality**]
-
-.art_cap[R generative art - inspired by Antonio Sánchez Chinchón - @aschinchon]
-
 
 ???
 
@@ -68,20 +111,386 @@ __End 30 seconds__!
 
 Say hi - introduce myself
 
-I'm Patient Safety Lead - System Analysis and Delivery with NHS England and Improvement. I'm an experienced analyst, data scientist and statistician, used to leading NHS data teams.  I'm a senior fellow in the NHS-R community, I contribute to the wider analyst community, and keen to help the profession move forward.
+I'm Patient Safety Lead - System Analysis and Delivery with NHS England and Improvement. 
 
-Thanks for the opportunity to and interview today.
-As the brief was to present two projects that demonstrate my data science expertise.  I'm committed to using modern techniques, and embracing open source approaches.  In part to demonstrate this, the presentation is written in Rmarkdown, wit visualisation and code on GitHub.
+I'm analyst by background, specialised in statistical modelling and and machine learning methods.  My previous role was with UHB - HED, providing HES-based analytical tools to ~50 NHS trust and other organisations. Specialised in statistical productions, mainly risk adjustment and prediction focused.
 
+Today we are going to talk about monitoring mortality, the construction of standardised ratios, the common SMRs in use SHMI and HSMR, cross-sectional and longitudinal monitoring, and issues.
+
+A bit of theory, a bit of anecdote.  Some R scripts available to show some of the functions.
 
 
 ---
 
+# Measuring death
+
+### Why do we do it?
+
++ 'Smoke alarm for the quality of care' - `r Citep(bib, "keoghKeoghReviewHospital2013", .opts = list(max.names=2))`
+
+### Does it work?
+
++ Yes: (...well, does their monitoring reduce deaths): `r Citep(bib, "jarmanMonitoringChangesHospital2005", "wrightLearningDeathHospital2006", .opts = list(max.names=2))`
++ No: 
+  + Poor proxy of avoidable death: `r Citep(bib, "keoghKeoghReviewHospital2013")`
+  + Case-mix adjustment can exaggerate biases it tries to address: `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015", .opts = list(max.names=2))`
+
+
+
+--
+
+#### Desceptive argument:
+_"...of course we should be monitoring deaths"_ but that's too simple, and it's not a direct measure of 'quality.'
+
+
+---
+class: inverse middle
+
+# Crude Mortality
+
+
+---
+# Crude mortality
+
+.pull-left[
+
++ Count the numbers of deaths?   - Not a rate
+{{content}}
+]
+
+.pull-right[
+```{r crudeplot, echo=FALSE}
+total_p <- LOS_model %>% 
+  summarise(p = sum(Death) / n()) %>% 
+  pull()
+  
+LOS_model %>% 
+  group_by(Organisation) %>% 
+  summarise(p = sum(Death) / n(),
+            sum(Death),
+            n = n()) %>% 
+  mutate(cilower = p - (1.96 * sqrt((p * (1-p)) / n)),
+         ciupper = p + (1.96 * sqrt((p * (1-p)) / n))) %>% 
+  ggplot(aes(y=p, x=Organisation))+
+  geom_point(size=2)+
+  geom_errorbar(aes(ymin=cilower, ymax=ciupper))+
+  geom_hline(yintercept=total_p, col="red")+
+  labs(title = "Trust-level crude mortality (%), taken from `LOS_model` in NHSRdatasets package"
+     , y = "Crude mortality rate (proportion)"
+     , x = "Trust")+ 
+  theme(text = element_text(size=9), plot.title = element_text(size=16),
+        axis.title = element_text(size=11))
+
+```
+
+```{r crudetime, echo=FALSE}
+data("ae_attendances")
+time_p <- ae_attendances %>% 
+  filter(org_code == "RQM", type == 1, period < as.Date("2018-04-01")) %>% 
+  summarise(prop_breaches = sum(breaches) / sum(attendances)) %>% 
+  pull()
+
+ae_attendances %>% 
+  filter(org_code == "RQM", type == 1, period < as.Date("2018-04-01")) %>% 
+  mutate(prop_breaches = breaches / attendances,
+         cilower = prop_breaches - (1.96 * sqrt((prop_breaches * (1-prop_breaches)) / attendances)),
+         ciupper = prop_breaches + (1.96 * sqrt((prop_breaches * (1-prop_breaches)) / attendances))) %>% 
+  ggplot(aes(y=prop_breaches, x=period))+
+  geom_point(size=2)+
+  geom_errorbar(aes(ymin=cilower, ymax=ciupper))+
+  geom_hline(yintercept=time_p, col="red")+
+  scale_y_continuous(labels = label_percent(accuracy=1))+
+  scale_x_date(date_labels = "%b-%y", date_breaks = "4 month")+
+  labs(title = "A&E 4hr wait breaches (%), taken from `ae_attendance` in NHSRdatasets package"
+       , y = "Percentage of 4hr breaches"
+       , x = "Time period")+ 
+  theme(text = element_text(size=9), plot.title = element_text(size=16),
+        axis.title = element_text(size=11))
+
+```
+]
+
+--
+
++ Give it some sort of scale:  proportion
+  + In hospital, patients, discharges, bed-days etc.
+  + Often adjusted to a larger standard, e.g. per thousand
+
+$${Crude\ Rate(p)} = \frac{\Sigma Deaths}{n}$$
+
+{{content}}
+--
+
++ __Strengths:__
+ + Easy to calculate
+ + Directly linked to real deaths
+ 
+{{content}}
+--
+
++ __Weaknesses:__
+ + Not really comparable across organisations
+ + Casemix confounds rate
+
+---
+class: inverse middle
+
+# Standardising mortality
+### Aim: reduce confounding and increase power of comparison
+
+---
+# Direct standardisation
+
++ Take our data and map them to a common population/structure.
+
++ Example:  Age-standardisation:
+  + Calculate age-specific rates in groups (e.g. 10-year)
+  + Identify a relevant standard population in corresponding groups. E.g. [European Standard Population]( https://www.opendata.nhs.scot/dataset/standard-populations)
+  + Multiply age-specific rates by standard population bins
+  + Sum and adjust to desired multiplier (e.g. per 100, per 100,000 etc.)
+
++ Commonly used in public health cases, such as cancer incidence and mortality rates.
+
+--
++ __Strengths:__
+ + Directly comparable between units/group/sites/countries
+ + Does not require statistical model
+ 
+
+--
+
++ __Weaknesses:__
+ + Harder to relate to local/observed numbers
+ + Challenging to do for anything more than age and sex
+
+---
+# Indirect standardisation
+
++ Compare our data to expected averages
+
++ E.g. using simple average as standard
+ + Calculate average rate, per patient, across the dataset
+ + Per trust, calculate 'expected rate': $average\ rate * n$
+
++ Commonly uses a regression model 
+
+
++ __Strengths:__
+ + Directly comparable between units/group/sites/countries
+ + Usually require statistical model, e.g. regression
+ 
+{{content}}
+--
+
++ __Weaknesses:__
+ + Usually requires a statistical model, e.g. regression to calculate 'expected rate'
+ + Susceptible to more forms of bias `r Citep(bib, "iezzoniRisksRiskAdjustment1997","deeksEvaluatingNonrandomisedIntervention2003",.opts = list(max.names=2))`
+ + Can be challenging to understand what changes in rate mean
+ 
+#### This is how SHMI and HSMR are constructed.
+
+---
+
+---
+# Common SMRs:
+
++ Summary Hospital-level Mortality Indicator (SHMI) `r Citep(bib, "campbellDevelopingSummaryHospital2012", .opts = list(max.names=2))`
++ Dr Foster Hospital Standardised Mortality Ratio (HSMR) `r Citep(bib, "jarmanExplainingDifferencesEnglish1999", .opts = list(max.names=2))`
+
+
+---
+class: inverse middle
+
+# Cross-sectional
+
+---
+
+# Comparison at single point in time
+
+.pull-left[
++ Both HSMR and SHMI report on the final year of their modelling period.
+
++ Snapshot of performance against expected
+
++ League-tables are bad, as measure is relative `r Citep(bib, "goldsteinLeagueTablesTheir1996", "lilfordUseMisuseProcess2004")`
+
++ SPC principles applied in using funnel plot `r Citep(bib, "spiegelhalterFunnelPlotsComparing2005")`
+
++ Overdispersion
+]
+
+.pull-right[
+![](./understanding_SMRs_files/figure-html/funnel-1.png)
+]
+---
+
+# Overdispersion
+
+.pull-left[
+
+___Overdispersion___, where conditional variance is greater than conditional mean, occurs when:
+
+1. Aggregation / Discretization
+1. Mis-specified predictors/model
+1. Presence of outliers
+1. Variation between response probabilities (heterogeneity)
+
+{{content}}
+
+]
+
+--
+
+__Repeated measures (correlation) __
+
++ Regression assumes all points independent
++ Sampling from same organisations repeatedly
++ Clustered: - local means
+
+--
+
+
+.pull-right[
+![](./assets/img/ints.gif)
+]
+
+---
+
+# Options for dealing with overdisperion
+
++ Ignore it: usecase dependent.  False alarm rate too high here, as error is underestimated
+
++ Improve the model with more information: Some room for this.
+
++ Build a model with clustered assumption `r Citep(bib, "maineyStatisticalMethodsNHS2020")`:
+  + Quasi-likelihood methods (with multiplicative scale factor) `r Citep(bib, "wedderburnQuasiLikelihoodFunctionsGeneralized1974")`
+  + Compound distribution model: beta binomial`r Citep(bib, "skellamProbabilityDistributionDerived1948")`
+  + Random-intercept model: model 'within' and 'between' variance `r Citep(bib, "goldsteinMultilevelStatisticalModels2010")`
+
++ Apply tools based on meta-analysis methods: `r Citep(bib, "spiegelhalterFunnelPlotsComparing2005")`
+  + Designed to summarise studies fo different size
+  + Akin to hospitals of different sizes
+  + Additivity assumption - more like random intercept than
+  
+  
+
+
+
+---
+class: inverse middle
+
+# Longitudinal
+
+---
+
+# How?
+
+.pull-left[
++ Can't simply plot in XmR chart, as risk-adjustment forms denominator (and overdispersion)
+
++ Can use the observed and predicted in risk-adjusted control chart
+
++ Common is 'risk-adjusted CUSUM'
+  + Continuous log-likelihood ratio test
+
+--
+
+$$C_t = max(C_{t-1} + w_t, 0)$$
+
++ $C$ CUSUM value at time-point $t$ (e.g. a monthly at a trust)
++ $w$ is a weighting, in this case the log-likelihood ratio (observation v.s. England) to calculate the CUSUM weight/value ($C$) at time point ($t$):
+]
+
+
+.pull-right[
+
+<p style="text-align:center;">
+<img src="./assets/img/agg_cusum.gif" alt="Aggregate cusum chart" width = "400" height="200">
+<img src="./assets/img/person_cusum.gif" alt="Person-level cusum chart" width = "400" height="200">
+</p>
+
+]
+
+---
+# Differences in CUSUM methods
+
+Until recently, mortality outlier programme and Imperial college sent monthly alerts to Trusts.
+
+.pull-left[
+### CQC
++ Data are transformed to z-scores
++ Global trigger (5.48) - 
+  + Can convert average run-length to FDR, and set threshold `r Citep(bib, c("griggNullSteadystateDistribution2008", "carequalitycommissioncqcNHSAcuteHospitals2014"), .opts = list(max.names=2))`
++ Applicable to other indicators and groupings, subject to transformation
++ Tested in R, translated in `SQL` procedures for calculation against all trusts and diagnosis groups
+]
+
+--
+
+.pull-right[
+### DFI
++ Binomial assumption and threshold set through simulation of average run-length to false positives. `r Citep(bib,"bottlePredictingFalseAlarm2011", .opts = list(max.names=2))`
++ Unique to each trust / group / reporting period.
++ Intractable to calculate each month, and authors fitted a set of descriptive equations.
++ Wrote program to solve equations for each group with non-linear optimiser (`R`)
++ Translated into similar `SQL` process, with call to `R`
+
+]
+
+---
+# VLAD charts
+
+A common criticism of CUSUMs is that the are opaque and hard to interpret.
+
+--
+
+.pull-left[
+# Visual Life Adjusted Display
+
++ Originally used to visualise surgical outcome more intuitively
++ $Vn=\sum\limits_{i=1}^ny_n -  \sum\limits_{i=1}^n X_n $
++ Can actually add limits tp 
+]
+
+.pull-right[
+```{r vlad}
+library(RcppRoll)
+sub <- 
+  medpar %>% 
+  filter(provnum == "030001") %>% 
+  mutate(ps = 1 - pred,
+         lives = ifelse(died == 1, -ps, (1-ps)))
+
+
+sub$wt <- cumsum(sub$lives)
+
+ggplot(sub, aes(y=wt, x=seq(length(lives))))+
+  geom_point()+
+  geom_line()+
+  theme(text = element_text(size=9))+
+  labs(title = "VLAD chart of `medpar` data set from COUNT package"
+       , y = "Lives gianed"
+       , x = "Patients discharged")+ 
+  theme(text = element_text(size=9), plot.title = element_text(size=16),
+        axis.title = element_text(size=11))
+
+```
+
+]
+
+
+---
+class:  inverse middle
+
+# Summary
+
+---
+# 
 ---
 class: references
 
 ### References (1)
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib, end = 14)
+PrintBibliography(bib, .opts = )
 ```
