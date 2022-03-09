@@ -142,10 +142,11 @@ A bit of theory, a bit of anecdote.  Some R scripts available to show some of th
 
 
 
---
+---
+class: middle
 
-#### Desceptive argument:
-_"...of course we should be monitoring deaths"_ but that's too simple, and it's not a direct measure of 'quality.'
+### Desceptive argument:
+___"...of course we should be monitoring deaths"___:  - but is this too simplistic a view?  Is it a measure of 'quality?'
 
 
 ---
@@ -155,7 +156,7 @@ class: inverse middle
 
 
 ---
-# Crude mortality
+## Crude mortality Rate
 
 .pull-left[
 
@@ -244,12 +245,12 @@ class: inverse middle
 ### Aim: reduce confounding and increase power of comparison
 
 ---
-# Direct standardisation
+## Direct standardisation
 
 + Take our data and map them to a common population/structure.
 
 + Example:  Age-standardisation:
-  + Calculate age-specific rates in groups (e.g. 10-year)
+  + Calculate age-specific rates in groups (e.g. 10-year bands)
   + Identify a relevant standard population in corresponding groups. E.g. [European Standard Population]( https://www.opendata.nhs.scot/dataset/standard-populations)
   + Multiply age-specific rates by standard population bins
   + Sum and adjust to desired multiplier (e.g. per 100, per 100,000 etc.)
@@ -269,18 +270,20 @@ class: inverse middle
  + Challenging to do for anything more than age and sex
 
 ---
-# Indirect standardisation
+## Indirect standardisation
 
 + Compare our data to expected averages
 
-+ E.g. using simple average as standard
- + Calculate average rate, per patient, across the dataset
++ E.g Calculate average rate, per-patient, across the dataset
  + Per trust, calculate 'expected rate': $average\ rate * n$
+ + Present as grouped ratios of Observed / Expected
+
+--
 
 + Commonly uses a regression model
   + Predict risk of event, based on case-mix factors (predictors)
-  + Present as grouped ratios of Observed / Predicted
 
+--
 
 + __Strengths:__
  + Directly comparable between units/group/sites/countries
@@ -291,10 +294,8 @@ class: inverse middle
 
 + __Weaknesses:__
  + Usually requires a statistical model, e.g. regression to calculate 'expected rate'
- + Susceptible to more forms of bias `r Citep(bib, "iezzoniRisksRiskAdjustment1997","deeksEvaluatingNonrandomisedIntervention2003",.opts = list(max.names=2))`
- + Can be challenging to understand what changes in rate mean
- 
-#### This is how SHMI and HSMR are constructed.
+ + Susceptible to more forms of bias `r Citep(bib, "iezzoniRisksRiskAdjustment1997","deeksEvaluatingNonrandomisedIntervention2003")`
+ + Can be challenging to understand what changes in rates mean
 
 ---
 ## Example SMR:
@@ -328,7 +329,7 @@ medpar %>%
 __SMR = 1: observed=predicted,  >1: observed>predicted, <1: observed <predicted__
 ---
 class: inverse middle
-# Common SMRs:
+# Common (indirectly standardised) SMRs:
 
 ### Summary Hospital-level Mortality Indicator (SHMI) 
 
@@ -337,9 +338,9 @@ class: inverse middle
 ---
 ## Hospital Standardised Mortality Ratio (HSMR)
 
-+ Work in USA in as early as 1970s demonstrated ability to calculate theses metrics.
++ Work in USA as early as 1970s demonstrated ability to calculate theses metrics.
 
-+ Prof. Sir Brian Jarman and others adapted these methods to English health care system, data coding standards and structures
++ Prof. Sir Brian Jarman and others adapted these methods to English health care system, data coding standards and structures.
 
 + Methods were heavily impacted and applied in aftermath of Bristol and Mid-Staffs enquiry.
 
@@ -373,9 +374,9 @@ Recommended creating a new, NHS owned and transparently published indicator, how
 --
 
 __Key References:__
-+ Review: [National Quality Board (in national web archives)(https://webarchive.nationalarchives.gov.uk/ukgwa/20120503091458/http://www.dh.gov.uk/en/Healthcare/Qualityandproductivity/Makingqualityhappen/NationalQualityBoard/DH_102954)
++ Review: [National Quality Board (in national web archives)](https://webarchive.nationalarchives.gov.uk/ukgwa/20120503091458/http://www.dh.gov.uk/en/Healthcare/Qualityandproductivity/Makingqualityhappen/NationalQualityBoard/DH_102954)
 + Sheffield paper: `r Citep(bib, "campbellDevelopingSummaryHospital2012")`
-+ NHSD SHMI: www.digital.nhs.uk/SHMI
++ NHSD SHMI: <a href="www.digital.nhs.uk/SHMI">www.digital.nhs.uk/SHMI</a>
 
 ---
 class: center
@@ -388,14 +389,15 @@ class: center
 # Criticisms (HSMR and/or SHMI)
 
 + Link to quality of hospitals unclear, 
-  + For: `r Citep(bib,"lilfordUsingHospitalMortality2010","blackAssessingQualityHospitals2010a")`
-  + Against: `r Citep(bib,"cecilWhatRelationshipMortality2020","cecilInvestigatingAssociationAlerts2018")`
+  + For: `r Citep(bib,"cecilWhatRelationshipMortality2020","cecilInvestigatingAssociationAlerts2018")`
+  + Against: `r Citep(bib,"lilfordUsingHospitalMortality2010","blackAssessingQualityHospitals2010a")`
 
-+ They do not relate to avoidable death  `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015")`
+
++ They do not directly relate to avoidable death  `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015")`
 
 + Single number does not convey nuance
 
-+ Insensitive to who survived
++ Insensitive to who patients who survived
 
 + Susceptible to 'gaming' - `r Citep(bib, "hawkesHowMessageMortality2013")`
 
@@ -465,7 +467,7 @@ __Repeated measures (correlation) __
 
 ---
 
-# aassddd dealing with overdisperion
+# Dealing with overdisperion
 
 + Ignore it: use-case dependent.  False alarm rate too high here, as error is underestimated
 
@@ -473,13 +475,13 @@ __Repeated measures (correlation) __
 
 + Build a model with clustered assumption `r Citep(bib, "maineyStatisticalMethodsNHS2020")`:
   + Quasi-likelihood methods (with multiplicative scale factor) `r Citep(bib, "wedderburnQuasiLikelihoodFunctionsGeneralized1974")`
-  + Compound distribution model: beta binomial`r Citep(bib, "skellamProbabilityDistributionDerived1948")`
+  + Compound distribution model: beta binomial `r Citep(bib, "skellamProbabilityDistributionDerived1948")`
   + Random-intercept model: model 'within' and 'between' variance `r Citep(bib, "goldsteinMultilevelStatisticalModels2010")`
 
-+ Apply tools based on meta-analysis methods: `r Citep(bib, "spiegelhalterFunnelPlotsComparing2005")`
++ Apply tools based on meta-analysis methods: `r Citep(bib, "spiegelhalterStatisticalMethodsHealthcare2012")`
   + Designed to summarise studies fo different size
   + Akin to hospitals of different sizes
-  + Additivity assumption - more like random intercept than
+  + Additivity assumption - more like random-intercept than scale factor
   
   
 
@@ -616,7 +618,7 @@ class: references
 ### References (1)
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib, end = 14)
+PrintBibliography(bib, end = 12)
 ```
 
 ---
@@ -625,5 +627,13 @@ class: references
 ### References (2)
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib, start = 15)
+PrintBibliography(bib, start = 13, end=24)
+```
+---
+class: references
+
+### References (3)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 25)
 ```
