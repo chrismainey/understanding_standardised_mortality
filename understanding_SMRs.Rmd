@@ -26,8 +26,9 @@ library(FunnelPlotR)
 library(COUNT)
 
 options(htmltools.dir.version = FALSE)
-BibOptions(check.entries = FALSE, bib.style = "authoryear", style = "HTML",
-           dashed = TRUE, cite.style="authoryear", longnamesfirst=FALSE)
+BibOptions(check.entries = FALSE, bib.style = "authoryear", style = "html",
+           dashed = FALSE, cite.style="authoryear", longnamesfirst=FALSE,
+           bibpunct=c("(",")","[", "]",";", ","), first.inits = TRUE, max.names=3)
 
 file.name <- system.file("Bib", "References.bib", package = "RefManageR")
 bib <- ReadBib("References.bib")
@@ -107,8 +108,6 @@ plot(a) + theme(plot.title = element_text(size=11))
 
 ???
 
-__End 30 seconds__!
-
 Say hi - introduce myself
 
 I'm Patient Safety Lead - System Analysis and Delivery with NHS England and Improvement. 
@@ -126,17 +125,20 @@ A bit of theory, a bit of anecdote.  Some R scripts available to show some of th
 
 ### Why do we do it?
 
-+ 'Smoke alarm for the quality of care' - `r Citep(bib, "keoghKeoghReviewHospital2013", .opts = list(max.names=2))`
++ 'Smoke alarm for the quality of care' - `r Citep(bib, "keoghKeoghReviewHospital2013")`
 + Tacit assumption that high mortality is bad
 
 --
 
 ### Does it work?
 
-+ Yes: (...well, does their monitoring reduce deaths): `r Citep(bib, "jarmanMonitoringChangesHospital2005", "wrightLearningDeathHospital2006", .opts = list(max.names=2))`
-+ No: 
++ __Yes:__ 
+  + Increases power of comparison by reducing confounding.
+  + Monitoring them has effects on hospital's vigilance and culture `r Citep(bib, "jarmanMonitoringChangesHospital2005", "wrightLearningDeathHospital2006")`
+
++ __No:__ 
   + Poor proxy of avoidable death: `r Citep(bib, "girlingCasemixAdjustedHospital2012")`
-  + Case-mix adjustment can exaggerate biases it tries to address: `r Citep(bib, "deeksEvaluatingNonrandomisedIntervention2003", .opts = list(max.names=2))`
+  + Case-mix adjustment can exaggerate biases it tries to address: `r Citep(bib, "deeksEvaluatingNonrandomisedIntervention2003")`
 
 
 
@@ -348,9 +350,9 @@ class: inverse middle
   + Until recently, sent alerts to CQC and trusts for high mortality.
   
 __Key References:__
-+ Original paper: `r Citep(bib, "jarmanExplainingDifferencesEnglish1999", .opts = list(max.names=2))`
-+ Birmingham's criticism: `r Citep(bib, "mohammedEvidenceMethodologicalBias2009", .opts = list(max.names=2))` 
-+ Paul Taylor's long-form article on history and controversy: `r Citep(bib, "taylorStandardizedMortalityRatios2014", .opts = list(max.names=2))`
++ Original paper: `r Citep(bib, "jarmanExplainingDifferencesEnglish1999")`
++ Birmingham's criticism: `r Citep(bib, "mohammedEvidenceMethodologicalBias2009")` 
++ Paul Taylor's long-form article on history and controversy: `r Citep(bib, "taylorStandardizedMortalityRatios2014")`
 
 ---
 ## Summary Hospital-level Mortality Indicator (SHMI)
@@ -372,7 +374,7 @@ Recommended creating a new, NHS owned and transparently published indicator, how
 
 __Key References:__
 + Review: [National Quality Board (in national web archives)(https://webarchive.nationalarchives.gov.uk/ukgwa/20120503091458/http://www.dh.gov.uk/en/Healthcare/Qualityandproductivity/Makingqualityhappen/NationalQualityBoard/DH_102954)
-+ Sheffield paper: `r Citep(bib, "campbellDevelopingSummaryHospital2012", .opts = list(max.names=2))`
++ Sheffield paper: `r Citep(bib, "campbellDevelopingSummaryHospital2012")`
 + NHSD SHMI: www.digital.nhs.uk/SHMI
 
 ---
@@ -385,9 +387,11 @@ class: center
 
 # Criticisms (HSMR and/or SHMI)
 
-+ They do not directly relate to quality of care`r Citep(bib,"lilfordUsingHospitalMortality2010","blackAssessingQualityHospitals2010a", .opts = list(max.names=2))`
++ Link to quality of hospitals unclear, 
+  + For: `r Citep(bib,"lilfordUsingHospitalMortality2010","blackAssessingQualityHospitals2010a")`
+  + Against: `r Citep(bib,"cecilWhatRelationshipMortality2020","cecilInvestigatingAssociationAlerts2018")`
 
-+ They do not relate to avoidable death  `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015", .opts = list(max.names=2))`
++ They do not relate to avoidable death  `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015")`
 
 + Single number does not convey nuance
 
@@ -397,7 +401,7 @@ class: center
 
 + Covid-19 pandemic, these models assume stability
 
-+ Case-mix adjustment fallacy `r Citep(bib, "mohammedEvidenceMethodologicalBias2009", opts = list(max.names=2))`
++ Case-mix adjustment fallacy `r Citep(bib, "mohammedEvidenceMethodologicalBias2009")`
 
 + Constant risk fallacy `r Citep(bib, "mohammedEvidenceMethodologicalBias2009", "nichollCasemixAdjustmentNonrandomised2007")`
 
@@ -461,7 +465,7 @@ __Repeated measures (correlation) __
 
 ---
 
-# Options for dealing with overdisperion
+# aassddd dealing with overdisperion
 
 + Ignore it: use-case dependent.  False alarm rate too high here, as error is underestimated
 
@@ -535,7 +539,7 @@ Until recently, mortality outlier programme and Imperial college sent monthly al
 ### CQC - (aggregated)
 + Data are transformed to z-scores
 + Overdispersion adjustment based on additive model `r Citep(bib,"spiegelhalterStatisticalMethodsHealthcare2012")`
-+ Can convert average run-length to FDR, and set threshold `r Citep(bib, c("griggNullSteadystateDistribution2008", "carequalitycommissioncqcNHSAcuteHospitals2014"), .opts = list(max.names=2))`
++ Can convert average run-length to FDR, and set threshold `r Citep(bib, c("griggNullSteadystateDistribution2008", "carequalitycommissioncqcNHSAcuteHospitals2014"))`
 + Global trigger (5.48) - set to marginal 0.01% FDR.
 + Applicable to other indicators and groupings, subject to same transformation
 ]
@@ -544,7 +548,7 @@ Until recently, mortality outlier programme and Imperial college sent monthly al
 
 .pull-right[
 ### DFI/Imperial - (person-level)
-+ Binomial assumption and threshold set through simulation of average run-length to false positives. `r Citep(bib,"bottlePredictingFalseAlarm2011", .opts = list(max.names=2))`
++ Binomial assumption and threshold set through simulation of average run-length to false positives. `r Citep(bib,"bottlePredictingFalseAlarm2011")`
 + Unique to each trust / group / reporting period.
 + Intractable to calculate each month, and authors fitted a set of descriptive equations give a decent approximation for conditions where mortality rate 30% or lower.
 + Formula can then be solved through optimisation methods and give threshold value for each group.
@@ -562,8 +566,8 @@ Until recently, mortality outlier programme and Imperial college sent monthly al
 .pull-left[
 ### Variable Life-Adjusted Display (VLAD)
 
-+ Originally used to visualise surgical outcome more intuitively `r Citep(bib,"lovegroveMonitoringPerformanceCardiac1999", .opts = list(max.names=2))`
-+ Can actually add limits to plot using cusums `r Citep(bib,"sherlaw-johnsonMethodDetectingRuns2005", .opts = list(max.names=2))`
++ Originally used to visualise surgical outcome more intuitively `r Citep(bib,"lovegroveMonitoringPerformanceCardiac1999")`
++ Can actually add limits to plot using cusums `r Citep(bib,"sherlaw-johnsonMethodDetectingRuns2005")`
 
 $$Vn=\sum\limits_{i=1}^ny_n -  \sum\limits_{i=1}^n X_n$$
 ]
@@ -598,7 +602,7 @@ class:  inverse
 
 + SHMI is NHS-owned indicator - wider scope and less case-mix adjustment
 
-+ Criticisms remain of both
++ Criticisms remain of both -  and SMRs broadly
 
 + Cross-sectional comparisons usually by funnel plot, longitudinal with cusums and vlad.
 
