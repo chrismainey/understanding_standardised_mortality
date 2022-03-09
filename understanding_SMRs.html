@@ -4,7 +4,7 @@
     <title>Understanding Standardised Mortality</title>
     <meta charset="utf-8" />
     <meta name="author" content="Chris Mainey" />
-    <meta name="date" content="2022-03-08" />
+    <meta name="date" content="2022-03-09" />
     <script src="understanding_SMRs_files/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -70,6 +70,9 @@ A bit of theory, a bit of anecdote.  Some R scripts available to show some of th
 ### Why do we do it?
 
 + 'Smoke alarm for the quality of care' - &lt;a id='cite-keoghKeoghReviewHospital2013'&gt;&lt;/a&gt;(&lt;a href='#bib-keoghKeoghReviewHospital2013'&gt;Keogh, 2013&lt;/a&gt;)
++ Tacit assumption that high mortality is bad
+
+--
 
 ### Does it work?
 
@@ -127,7 +130,7 @@ class: inverse middle
 
 + __Weaknesses:__
  + Not really comparable across organisations
- + Casemix confounds rate
+ + Case-mix confounds rate
 
 ---
 class: inverse middle
@@ -169,7 +172,9 @@ class: inverse middle
  + Calculate average rate, per patient, across the dataset
  + Per trust, calculate 'expected rate': `\(average\ rate * n\)`
 
-+ Commonly uses a regression model 
++ Commonly uses a regression model
+  + Predict risk of event, based on case-mix factors (predictors)
+  + Present as grouped ratios of Observed / Predicted
 
 
 + __Strengths:__
@@ -187,13 +192,58 @@ class: inverse middle
 #### This is how SHMI and HSMR are constructed.
 
 ---
+## Example SMR:
+.pull-left[
 
+```r
+# Load 'medpar' dataset from COUNT package.
+data("medpar")
+
+# build logistic regression for risk of death
+mod1 &lt;- glm(died ~ los + factor(type) + age80
+            , data=medpar
+            , family = "binomial")
+
+# Predict risk of death back into data frame.
+medpar$pred &lt;- predict(mod1, type="response")
+
+# SMRs
+medpar %&gt;% 
+  group_by(provnum) %&gt;% 
+  summarise(Observered = sum(died),
+            Expected = sum(pred),
+            SMR = sum(died) / sum(pred))
+```
+]
+
+.pull-right[
+
+```
+## # A tibble: 54 x 4
+##    provnum    Observered Expected   SMR
+##    &lt;labelled&gt;      &lt;int&gt;    &lt;dbl&gt; &lt;dbl&gt;
+##  1 030001             16    19.2  0.832
+##  2 030002             19    20.7  0.916
+##  3 030003              2     1.77 1.13 
+##  4 030006             23    25.8  0.893
+##  5 030007              2     4.44 0.451
+##  6 030008              5     9.24 0.541
+##  7 030009              4     5.34 0.749
+##  8 030010             22    17.9  1.23 
+##  9 030011             12    12.6  0.955
+## 10 030012             12     7.48 1.60 
+## # ... with 44 more rows
+```
+]
+
+__SMR = 1: observed=predicted,  &gt;1: observed&gt;predicted, &lt;1: observed &lt;predicted__
 ---
-class: inverse
+class: inverse middle
 # Common SMRs:
 
-+ Summary Hospital-level Mortality Indicator (SHMI) &lt;a id='cite-campbellDevelopingSummaryHospital2012'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/gb3r9t'&gt;Campbell Jacques, et al., 2012a&lt;/a&gt;)
-+ Dr Foster Hospital Standardised Mortality Ratio (HSMR) &lt;a id='cite-jarmanExplainingDifferencesEnglish1999'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/fkkfm9'&gt;Jarman Gault, et al., 1999&lt;/a&gt;)
+### Summary Hospital-level Mortality Indicator (SHMI) 
+
+### Dr Foster Hospital Standardised Mortality Ratio (HSMR)
 
 ---
 ## Hospital Standardised Mortality Ratio (HSMR)
@@ -211,7 +261,7 @@ class: inverse
   + Until recently, sent alerts to CQC and trusts for high mortality.
   
 __Key References:__
-+ Original paper: (&lt;a href='https://doi.org/10/fkkfm9'&gt;Jarman Gault, et al., 1999&lt;/a&gt;)
++ Original paper: &lt;a id='cite-jarmanExplainingDifferencesEnglish1999'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/fkkfm9'&gt;Jarman Gault, et al., 1999&lt;/a&gt;)
 + Birmingham's criticism: &lt;a id='cite-mohammedEvidenceMethodologicalBias2009'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/bv4sh8'&gt;Mohammed Deeks, et al., 2009&lt;/a&gt;) 
 + Paul Taylor's long-form article on history and controversy: &lt;a id='cite-taylorStandardizedMortalityRatios2014'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/f5pxfw'&gt;Taylor, 2014&lt;/a&gt;)
 
@@ -235,12 +285,12 @@ Recommended creating a new, NHS owned and transparently published indicator, how
 
 __Key References:__
 + Review: [National Quality Board (in national web archives)(https://webarchive.nationalarchives.gov.uk/ukgwa/20120503091458/http://www.dh.gov.uk/en/Healthcare/Qualityandproductivity/Makingqualityhappen/NationalQualityBoard/DH_102954)
-+ Sheffield paper: (&lt;a href='https://doi.org/10/gb3r9t'&gt;Campbell Jacques, et al., 2012a&lt;/a&gt;)
++ Sheffield paper: &lt;a id='cite-campbellDevelopingSummaryHospital2012'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/gb3r9t'&gt;Campbell Jacques, et al., 2012&lt;/a&gt;)
 + NHSD SHMI: www.digital.nhs.uk/SHMI
 
 ---
-class: center middle
-# Case-mix factors:
+class: center
+## Case-mix factors:
 
 &lt;img src="./assets/img/model.png" alt="SHMI &amp; HSMR comparison table"&gt;
 
@@ -248,9 +298,26 @@ class: center middle
 
 # Criticisms (HSMR and/or SHMI)
 
-+ They do not directly relate to quality &lt;a id='cite-lilfordUsingHospitalMortality2010'&gt;&lt;/a&gt;&lt;a id='cite-blackAssessingQualityHospitals2010a'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/frq62g'&gt;Lilford and Pronovost, 2010&lt;/a&gt;; &lt;a href='https://doi.org/10.1136/bmj.c2066'&gt;Black, 2010&lt;/a&gt;)
++ They do not directly relate to quality of care&lt;a id='cite-lilfordUsingHospitalMortality2010'&gt;&lt;/a&gt;&lt;a id='cite-blackAssessingQualityHospitals2010a'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/frq62g'&gt;Lilford and Pronovost, 2010&lt;/a&gt;; &lt;a href='https://doi.org/10.1136/bmj.c2066'&gt;Black, 2010&lt;/a&gt;)
 
 + They do not relate to avoidable death  &lt;a id='cite-hoganAvoidabilityHospitalDeaths2015'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/f4fr3b'&gt;Girling Hofer, et al., 2012&lt;/a&gt;; &lt;a href='https://doi.org/10/gb3swm'&gt;Hogan Zipfel, et al., 2015&lt;/a&gt;)
+
++ Single number does not convey nuance
+
++ Insensitive to who survived
+
++ Susceptible to 'gaming' - &lt;a id='cite-hawkesHowMessageMortality2013'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10.1136/bmj.f562'&gt;Hawkes, 2013&lt;/a&gt;)
+
++ Covid-19 pandemic, these models assume stability
+
++ Case-mix adjustment fallacy (&lt;a href='https://doi.org/10/bv4sh8'&gt;Mohammed, Deeks, Girling, et al., 2009&lt;/a&gt;)
+
++ Constant risk fallacy &lt;a id='cite-nichollCasemixAdjustmentNonrandomised2007'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10/bv4sh8'&gt;Mohammed, Deeks, Girling, et al., 2009&lt;/a&gt;; &lt;a href='https://doi.org/10/d7f9jh'&gt;Nicholl, 2007&lt;/a&gt;)
+
++ Potential for Simpsons paradox &lt;a id='cite-marang-vandemheenSimpsonParadoxHow2014'&gt;&lt;/a&gt;(&lt;a href='https://doi.org/10.1136/bmjqs-2014-003358'&gt;Marang-van
+de
+Mheen and Shojania, 2014&lt;/a&gt;)
+
 ---
 class: inverse middle
 
@@ -311,7 +378,7 @@ __Repeated measures (correlation) __
 
 # Options for dealing with overdisperion
 
-+ Ignore it: usecase dependent.  False alarm rate too high here, as error is underestimated
++ Ignore it: use-case dependent.  False alarm rate too high here, as error is underestimated
 
 + Improve the model with more information: Some room for this.
 
@@ -429,10 +496,30 @@ Until recently, mortality outlier programme and Imperial college sent monthly al
 
 
 ---
-class:  inverse middle
+class:  inverse
+## Summary
 
-# Summary
++ Mortality monitoring is common, but it's use as a global measure (rather than specific conditions) is unclear.
 
++ Not directly linked to avoidable deaths
+
++ Crude mortality can be sensibly used in some cases, but confounded by case-mix
+
++ Case-mix adjusted mortality is usually done by indirect standardisation, with regression model
+
++ SMRs as grouped sums of observed / 'expected' (or 'predicted')
+
++ HSMR was first national measure in UK - narrow scope and extensive case-mix adjustment
+
++ SHMI is NHS-owned indicator - wider scope and less case-mix adjustment
+
++ Criticisms remain of both
+
++ Cross-sectional comparisons usually by funnel plot, longitudinal with cusums and vlad.
+
+--
+
+__Worth knowing history and limitations of indicators before using them__
 
 ---
 class: references
@@ -453,7 +540,7 @@ ISSN: 01605682, 14769360.
 DOI: &lt;a href="https://doi.org/10/cbr4rq"&gt;10/cbr4rq&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;cite&gt;&lt;a id='bib-campbellDevelopingSummaryHospital2012'&gt;&lt;/a&gt;&lt;a href="#cite-campbellDevelopingSummaryHospital2012"&gt;Campbell, M. J., R. M. Jacques, J. Fotheringham, et al.&lt;/a&gt;
-(2012a).
+(2012).
 &amp;ldquo;Developing a summary hospital mortality index: retrospective analysis in English hospitals over five years&amp;rdquo;.
 In: &lt;em&gt;BMJ&lt;/em&gt; 344, p. e1001.
 DOI: &lt;a href="https://doi.org/10/gb3r9t"&gt;10/gb3r9t&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
@@ -480,6 +567,12 @@ DOI: &lt;a href="https://doi.org/10/f4fr3b"&gt;10/f4fr3b&lt;/a&gt;.&lt;/cite&gt;
 &amp;ldquo;The null steady-state distribution of the CUSUM statistic&amp;rdquo;.
 In: &lt;em&gt;Technometrics : a journal of statistics for the physical, chemical, and engineering sciences&lt;/em&gt;.
 DOI: &lt;a href="https://doi.org/10/bgvkdx"&gt;10/bgvkdx&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-hawkesHowMessageMortality2013'&gt;&lt;/a&gt;&lt;a href="#cite-hawkesHowMessageMortality2013"&gt;Hawkes, N.&lt;/a&gt;
+(2013).
+&amp;ldquo;How the Message from Mortality Figures Was Missed at Mid Staffs&amp;rdquo;.
+In: &lt;em&gt;BMJ : British Medical Journal&lt;/em&gt; 346, p. f562.
+DOI: &lt;a href="https://doi.org/10.1136/bmj.f562"&gt;10.1136/bmj.f562&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;cite&gt;&lt;a id='bib-hoganAvoidabilityHospitalDeaths2015'&gt;&lt;/a&gt;&lt;a href="#cite-hoganAvoidabilityHospitalDeaths2015"&gt;Hogan, H., R. Zipfel, J. Neuburger, et al.&lt;/a&gt;
 (2015).
@@ -519,17 +612,17 @@ In: &lt;em&gt;Lancet&lt;/em&gt; 363.9415, pp. 1147&amp;ndash;54.
 ISSN: 0140-6736.
 DOI: &lt;a href="https://doi.org/10/c97xd2"&gt;10/c97xd2&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
 
+---
+class: references
+
+### References (2)
+
 &lt;p&gt;&lt;cite&gt;&lt;a id='bib-lilfordUsingHospitalMortality2010'&gt;&lt;/a&gt;&lt;a href="#cite-lilfordUsingHospitalMortality2010"&gt;Lilford, R. and P. Pronovost&lt;/a&gt;
 (2010).
 &amp;ldquo;Using Hospital Mortality Rates to Judge Hospital Performance: A Bad Idea That Just Won't Go Away&amp;rdquo;.
 In: &lt;em&gt;BMJ&lt;/em&gt; 340, p. c2016.
 ISSN: 1756-1833 (Electronic) 0959-535X (Linking).
 DOI: &lt;a href="https://doi.org/10/frq62g"&gt;10/frq62g&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
-
----
-class: references
-
-### References (2)
 
 &lt;p&gt;&lt;cite&gt;&lt;a id='bib-lovegroveMonitoringPerformanceCardiac1999'&gt;&lt;/a&gt;&lt;a href="#cite-lovegroveMonitoringPerformanceCardiac1999"&gt;Lovegrove, J., C. Sherlaw-Johnson, O. Valencia, et al.&lt;/a&gt;
 (1999).
@@ -544,12 +637,27 @@ DOI: &lt;a href="https://doi.org/10/dtsvbg"&gt;10/dtsvbg&lt;/a&gt;.&lt;/cite&gt;
 London.
 URL: &lt;a href="https://discovery.ucl.ac.uk/id/eprint/10094736/"&gt;https://discovery.ucl.ac.uk/id/eprint/10094736/&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
 
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-marang-vandemheenSimpsonParadoxHow2014'&gt;&lt;/a&gt;&lt;a href="#cite-marang-vandemheenSimpsonParadoxHow2014"&gt;Marang-van
+de
+Mheen, P. J. and K. G. Shojania&lt;/a&gt;
+(2014).
+&amp;ldquo;Simpson's Paradox: How Performance Measurement Can Fail Even with Perfect Risk Adjustment&amp;rdquo;.
+In: &lt;em&gt;BMJ Quality &amp;amp;amp; Safety&lt;/em&gt; 23.9, p. 701.
+DOI: &lt;a href="https://doi.org/10.1136/bmjqs-2014-003358"&gt;10.1136/bmjqs-2014-003358&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
 &lt;p&gt;&lt;cite&gt;&lt;a id='bib-mohammedEvidenceMethodologicalBias2009'&gt;&lt;/a&gt;&lt;a href="#cite-mohammedEvidenceMethodologicalBias2009"&gt;Mohammed, M. A., J. J. Deeks, A. Girling, et al.&lt;/a&gt;
 (2009).
 &amp;ldquo;Evidence of Methodological Bias in Hospital Standardised Mortality Ratios: Retrospective Database Study of English Hospitals&amp;rdquo;.
 In: &lt;em&gt;BMJ&lt;/em&gt; 338, p. b780.
 ISSN: 1756-1833 (Electronic) 0959-535X (Linking).
 DOI: &lt;a href="https://doi.org/10/bv4sh8"&gt;10/bv4sh8&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;cite&gt;&lt;a id='bib-nichollCasemixAdjustmentNonrandomised2007'&gt;&lt;/a&gt;&lt;a href="#cite-nichollCasemixAdjustmentNonrandomised2007"&gt;Nicholl, J.&lt;/a&gt;
+(2007).
+&amp;ldquo;Case-Mix Adjustment in Non-Randomised Observational Evaluations: The Constant Risk Fallacy&amp;rdquo;.
+In: &lt;em&gt;Journal of Epidemiology and Community Health (1979-)&lt;/em&gt; 61.11, pp. 1010&amp;ndash;1013.
+ISSN: 0143005X, 14702738.
+DOI: &lt;a href="https://doi.org/10/d7f9jh"&gt;10/d7f9jh&lt;/a&gt;.&lt;/cite&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;cite&gt;&lt;a id='bib-sherlaw-johnsonMethodDetectingRuns2005'&gt;&lt;/a&gt;&lt;a href="#cite-sherlaw-johnsonMethodDetectingRuns2005"&gt;Sherlaw-Johnson, C.&lt;/a&gt;
 (2005).

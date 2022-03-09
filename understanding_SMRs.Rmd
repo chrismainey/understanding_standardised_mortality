@@ -98,7 +98,7 @@ a<-funnel_plot(medpar$died, medpar$pred, medpar$provnum,
             draw_adjusted = FALSE, draw_unadjusted = TRUE 
             , x_range = c(0,30), y_range=c(0,3)
             , title = "Funnel Plot of SMR, using `medpar` data from COUNT package" )
-plot(a) + theme(plot.title = element_text())
+plot(a) + theme(plot.title = element_text(size=11))
 
 ```
 ]
@@ -127,6 +127,9 @@ A bit of theory, a bit of anecdote.  Some R scripts available to show some of th
 ### Why do we do it?
 
 + 'Smoke alarm for the quality of care' - `r Citep(bib, "keoghKeoghReviewHospital2013", .opts = list(max.names=2))`
++ Tacit assumption that high mortality is bad
+
+--
 
 ### Does it work?
 
@@ -230,7 +233,7 @@ $${Crude\ Rate(p)} = \frac{\Sigma Deaths}{n}$$
 
 + __Weaknesses:__
  + Not really comparable across organisations
- + Casemix confounds rate
+ + Case-mix confounds rate
 
 ---
 class: inverse middle
@@ -272,7 +275,9 @@ class: inverse middle
  + Calculate average rate, per patient, across the dataset
  + Per trust, calculate 'expected rate': $average\ rate * n$
 
-+ Commonly uses a regression model 
++ Commonly uses a regression model
+  + Predict risk of event, based on case-mix factors (predictors)
+  + Present as grouped ratios of Observed / Predicted
 
 
 + __Strengths:__
@@ -290,13 +295,42 @@ class: inverse middle
 #### This is how SHMI and HSMR are constructed.
 
 ---
+## Example SMR:
+.pull-left[
+```{r SMRexample, eval=FALSE}
+# Load 'medpar' dataset from COUNT package.
+data("medpar")
 
+# build logistic regression for risk of death
+mod1 <- glm(died ~ los + factor(type) + age80
+            , data=medpar
+            , family = "binomial")
+
+# Predict risk of death back into data frame.
+medpar$pred <- predict(mod1, type="response")
+
+# SMRs
+medpar %>% 
+  group_by(provnum) %>% 
+  summarise(Observered = sum(died),
+            Expected = sum(pred),
+            SMR = sum(died) / sum(pred))
+```
+]
+
+.pull-right[
+```{r SMRexample-out, ref.label="SMRexample", echo=FALSE}
+```
+]
+
+__SMR = 1: observed=predicted,  >1: observed>predicted, <1: observed <predicted__
 ---
-class: inverse
+class: inverse middle
 # Common SMRs:
 
-+ Summary Hospital-level Mortality Indicator (SHMI) `r Citep(bib, "campbellDevelopingSummaryHospital2012", .opts = list(max.names=2))`
-+ Dr Foster Hospital Standardised Mortality Ratio (HSMR) `r Citep(bib, "jarmanExplainingDifferencesEnglish1999", .opts = list(max.names=2))`
+### Summary Hospital-level Mortality Indicator (SHMI) 
+
+### Dr Foster Hospital Standardised Mortality Ratio (HSMR)
 
 ---
 ## Hospital Standardised Mortality Ratio (HSMR)
@@ -342,8 +376,8 @@ __Key References:__
 + NHSD SHMI: www.digital.nhs.uk/SHMI
 
 ---
-class: center middle
-# Case-mix factors:
+class: center
+## Case-mix factors:
 
 <img src="./assets/img/model.png" alt="SHMI & HSMR comparison table">
 
@@ -351,9 +385,24 @@ class: center middle
 
 # Criticisms (HSMR and/or SHMI)
 
-+ They do not directly relate to quality `r Citep(bib,"lilfordUsingHospitalMortality2010","blackAssessingQualityHospitals2010a", .opts = list(max.names=2))`
++ They do not directly relate to quality of care`r Citep(bib,"lilfordUsingHospitalMortality2010","blackAssessingQualityHospitals2010a", .opts = list(max.names=2))`
 
 + They do not relate to avoidable death  `r Citep(bib, "girlingCasemixAdjustedHospital2012",  "hoganAvoidabilityHospitalDeaths2015", .opts = list(max.names=2))`
+
++ Single number does not convey nuance
+
++ Insensitive to who survived
+
++ Susceptible to 'gaming' - `r Citep(bib, "hawkesHowMessageMortality2013")`
+
++ Covid-19 pandemic, these models assume stability
+
++ Case-mix adjustment fallacy `r Citep(bib, "mohammedEvidenceMethodologicalBias2009", opts = list(max.names=2))`
+
++ Constant risk fallacy `r Citep(bib, "mohammedEvidenceMethodologicalBias2009", "nichollCasemixAdjustmentNonrandomised2007")`
+
++ Potential for Simpsons paradox `r Citep(bib, "marang-vandemheenSimpsonParadoxHow2014")`
+
 ---
 class: inverse middle
 
@@ -414,7 +463,7 @@ __Repeated measures (correlation) __
 
 # Options for dealing with overdisperion
 
-+ Ignore it: usecase dependent.  False alarm rate too high here, as error is underestimated
++ Ignore it: use-case dependent.  False alarm rate too high here, as error is underestimated
 
 + Improve the model with more information: Some room for this.
 
@@ -532,10 +581,30 @@ $$Vn=\sum\limits_{i=1}^ny_n -  \sum\limits_{i=1}^n X_n$$
 
 
 ---
-class:  inverse middle
+class:  inverse
+## Summary
 
-# Summary
++ Mortality monitoring is common, but it's use as a global measure (rather than specific conditions) is unclear.
 
++ Not directly linked to avoidable deaths
+
++ Crude mortality can be sensibly used in some cases, but confounded by case-mix
+
++ Case-mix adjusted mortality is usually done by indirect standardisation, with regression model
+
++ SMRs as grouped sums of observed / 'expected' (or 'predicted')
+
++ HSMR was first national measure in UK - narrow scope and extensive case-mix adjustment
+
++ SHMI is NHS-owned indicator - wider scope and less case-mix adjustment
+
++ Criticisms remain of both
+
++ Cross-sectional comparisons usually by funnel plot, longitudinal with cusums and vlad.
+
+--
+
+__Worth knowing history and limitations of indicators before using them__
 
 ---
 class: references

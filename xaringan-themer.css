@@ -50,6 +50,7 @@
   --text-bold-color: #23395b;
   --code-highlight-color: rgba(255,255,0,0.5);
   --inverse-text-color: #E9EBEE;
+  --inverse-text-bold-color:  #E9EBEE;
   --inverse-background-color: #23395b;
   --inverse-header-color: #E9EBEE;
   --inverse-link-color:  #E9EBEE;
@@ -91,7 +92,7 @@ h1, h2, h3 {
 }
 .remark-slide-content h3 {
   font-size: var(--header-h3-font-size);
-  line-height: 28px;
+  line-height: 30px;
 }
 .remark-code, .remark-inline-code {
   font-family: var(--code-font-family), Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
@@ -104,9 +105,13 @@ h1, h2, h3 {
   color: #F97B64;
 }
 .remark-slide-number {
-  color: #FEFDFD;
+  color:  var(--inverse-background-color);
   opacity: 1;
   font-size: 0.9rem;
+}
+.inverse strong {
+  font-weight: bold;
+  color: var(--inverse-text-bold-color);
 }
 strong {
   font-weight: bold;
